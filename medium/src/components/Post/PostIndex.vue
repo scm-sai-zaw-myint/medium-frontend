@@ -14,7 +14,8 @@
                             </div>
                             
                         </div>
-                        <button class="px-2 py-1 rounded-pill bg-danger mx-3 text-light border-0 text-sm">
+                        <button v-if="isUserPost"
+                         class="px-2 py-1 rounded-pill bg-danger mx-3 text-light border-0 text-sm">
                             Delete
                         </button>
                     </div>
@@ -30,48 +31,23 @@
                 </div>
                 <div class="col-lg-4 order-lg-2 col-sm-12 order-1 border-left border-1 ps-3">
                     <div class="w-100 mx-auto">
-                        <h3 class="mb-2">2022 latest Posts</h3>
+                        <h3 class="mb-2">latest Posts</h3>
                         <div class="d-flex flex-column">
-                            <div class="row my-3">
+                            <router-link :to="{name: 'post-index',params:{id: lpost.id}}" class="row my-3" v-for="lpost in latest">
                                 <div class="col-md-12 d-flex">
                                     <div class="overflow-hidden rounded-circle d-flex align-items-center justify-content-center"
                                         style="height: 30px;width: 30px;">
-                                        <img src="../../assets/img/user-profile.webp" alt="Profile" height="100%">
+                                        <img :src="getProfile(lpost.user.profile)" alt="Profile" style="height: 100%">
                                     </div>
-                                    <span class="px-2">Zulie Rane</span>
+                                    <span class="px-2">{{lpost.user.name}}</span>
                                 </div>
                                 <div class="col-md-12">
-                                    <span class="fw-bold">2022 in a world : Permastressed</span>
+                                    <span class="fw-bold">{{lpost.title}}</span>
                                 </div>
-                            </div>
-                            <div class="row my-3">
-                                <div class="col-md-12 d-flex">
-                                    <div class="overflow-hidden rounded-circle d-flex align-items-center justify-content-center"
-                                        style="height: 30px;width: 30px;">
-                                        <img src="../../assets/img/user-profile.webp" alt="Profile" height="100%">
-                                    </div>
-                                    <span class="px-2">Zulie Rane</span>
-                                </div>
-                                <div class="col-md-12">
-                                    <span class="fw-bold">2022 in a world : Permastressed</span>
-                                </div>
-                            </div>
-                            <div class="row my-3">
-                                <div class="col-md-12 d-flex">
-                                    <div class="overflow-hidden rounded-circle d-flex align-items-center justify-content-center"
-                                        style="height: 30px;width: 30px;">
-                                        <img src="../../assets/img/user-profile.webp" alt="Profile" height="100%">
-                                    </div>
-                                    <span class="px-2">Zulie Rane</span>
-                                </div>
-                                <div class="col-md-12">
-                                    <span class="fw-bold">2022 in a world : Permastressed</span>
-                                </div>
-                            </div>
+                            </router-link>
                         </div>
                         <div class="px-2 py-4 border-top border-secondary float-start" style="font-size: .8em;">
                             <span class="border p-2 rounded-pill bg-light m-1 float-start" v-for="category in data.categories">{{category.name}}</span>
-                            
                         </div>
                     </div>
                 </div>
@@ -111,7 +87,6 @@
                                 </span>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
             </div>
@@ -122,9 +97,14 @@
 import { toRef } from 'vue';
 import { useStore } from 'vuex';
 import { getImage,getProfile,getDate } from '@/js/script';
+import { computed } from '@vue/reactivity';
 const store = useStore()
 
 const data = toRef(store.state.postdetail,'data')
-console.log(data.value)
+const latest= toRef(store.state.posts,'latest')
+
+const isUserPost = computed(()=>{
+    return data.value.user.id === store.state.user.profileData.id
+})
 
 </script>

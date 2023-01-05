@@ -12,8 +12,8 @@
                 </div>
             </div>
         </div>
-    </div>
-    <PostList :data="postData" />
+    </div> 
+    <PostList :data="postData" :all-category="allCategory"  />
   </MainLayout>
 </template>
 <script setup>
@@ -24,5 +24,5 @@ import MainLayout from './Layouts/MainLayout.vue';
 
 const store = useStore()
 const postData = ref(store.state.posts.data)
-console.log(store.state.posts.data)
+const allCategory = ref(store.state.category.data)
 </script>

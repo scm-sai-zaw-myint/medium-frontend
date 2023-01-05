@@ -17,13 +17,13 @@
                                 {{post.description}}
                             </router-link>
                             <div class="d-flex align-items-center justify-content-between" style="font-size: .7em">
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ getDate(post.createdAt) }}</span>
-                                    <span>1 min read</span>
-                                    <span class="rounded bg-gray-opt px-1 mx-1" v-for="category in post.category">
+                                <div class="float-start">
+                                    <span class="float-start me-2">{{ getDate(post.createdAt) }}</span>
+                                    <span class="float-start ">1 min read</span>
+                                    <span class="float-start rounded bg-gray-opt px-1 mx-1" v-for="category in post.categories">
                                         {{category.name}}
                                     </span>
-                                    <span>
+                                    <span class="float-start ">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="#FFC017" stroke="none" viewBox="0 0 24 24" stroke-width="1.5"
                                             style="width: 15px">
                                             <path stroke-linecap="round" stroke-linejoin="round"  stroke="currentColor"
@@ -35,8 +35,8 @@
                             </div>
                         </div>
                         <div class="col-md-4 col-sm-12 home-post d-flex justify-content-center align-items-center">
-                            <RouterLink :to="{name: 'post-index',params:{id: post.id}}" class="w-100">
-                                <img :src="getImage(post.image)" alt="" style="display: block;width: 100%;">
+                            <RouterLink :to="{name: 'post-index',params:{id: post.id}}" class="w-100 d-flex align-items-center justify-content-center">
+                                <img :src="getImage(post.image)" alt="" style="display: block;width: 80%;">
                             </RouterLink>
                         </div>
                     </div>
@@ -95,10 +95,12 @@ const props = defineProps({
                 }
             }
         ]
+    },
+    allCategory: {
+        type: Array,
+        default: []
     }
 })
-
-
 </script>
 
 <style lang="scss" scoped>

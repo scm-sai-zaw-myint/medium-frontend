@@ -32,15 +32,16 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link text-dark" href="login.html">Sign in</a>
+              <router-link :to="{name: 'sign-in'}" class="nav-link text-dark">
+                sign in
+              </router-link>
             </li>
-            <button
-              class="get-btn btn navbar-btn rounded-pill bg-dark text-white"
-            >
+            <router-link :to="{'name':'sign-up'}" class="get-btn btn navbar-btn rounded-pill bg-dark text-white">
               Get started
-            </button>
+            </router-link>
           </ul>
         </div>
       </div>
     </nav>
 </template>
+<script src="@/js/bootstrap/js/bootstrap.bundle.js"></script>
