@@ -30,7 +30,7 @@
 
 
                     <button class="d-flex align-items-center justify-content-between border-0 bg-transparent"
-                    @click="show = !show">
+                    @click="show = !show" v-if="isUserLogged">
                         <div class="mx-2 overflow-hidden" style="width: 30px;height: 30px; border-radius: 50%;">
                             <img src="../../../assets/img/user-profile.webp" alt="Profile" style="height: 100%" class="block">
                         </div>
@@ -47,7 +47,7 @@
                                 </svg>
                                 <span class="px-2">Profile</span>
                             </router-link>
-                            <button class="d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns" style="min-width: 230px">
+                            <router-link :to="{name: 'home'}" class="d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns" style="min-width: 230px">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-label="Lists">
                                     <path
                                         d="M6.44 6.69h0a1.5 1.5 0 0 1 1.06-.44h9c.4 0 .78.16 1.06.44l.35-.35-.35.35c.28.28.44.66.44 1.06v14l-5.7-4.4-.3-.23-.3.23-5.7 4.4v-14c0-.4.16-.78.44-1.06z"
@@ -55,7 +55,7 @@
                                     <path d="M12.5 2.75h-8a2 2 0 0 0-2 2v11.5" stroke="currentColor" stroke-linecap="round"></path>
                                 </svg>
                                 <span class="px-2">Posts</span>
-                            </button>
+                            </router-link>
 
                            
                             <button class="d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns border-top" style="min-width: 230px">
@@ -63,7 +63,7 @@
                                     class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3" />
                                 </svg>
-                                <span class="px-2">Logout</span>
+                                <span @click="logout" class="px-2">Logout</span>
                             </button>
                         </div>
                     </Transition>
@@ -76,12 +76,22 @@
 <script setup>
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 const show = ref(false)
 const store = useStore()
+const router = useRouter()
 const isUserLogged = computed(()=>{
     return store.state.user.TOKEN != null
 })
+const logout = ()=>{
+    store.dispatch('logout').then((res)=>{
+        if(res.ok){
+            router.push({name: 'sign-in'})
+        }
+    })
+    
+}
 </script>
 <style scoped>
 .drop-down-enter-active,

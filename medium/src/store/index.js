@@ -9,8 +9,7 @@ const user = {
     }),
     actions:{
         async loginUser({commit},data){
-            return axiosClient.post('/auth/login',data).then(({data})=>{
-                console.log(data.data)
+            return axiosClient.post('/auth/request/login',data).then(({data})=>{
                 if(data.ok) commit('putUserData',data.data)
                 return data
             }).catch(({response})=>{    
@@ -18,7 +17,7 @@ const user = {
             })
         },
         async registration({commit},payload){
-            return axiosClient.post('/auth/registration',payload,{
+            return axiosClient.post('/auth/request/registration',payload,{
                 headers:{
                     'Content-Type': 'multipart/form-data'
                 }
@@ -31,11 +30,39 @@ const user = {
         },
         async getProfileData({commit}){
             return axiosClient.get('/auth/').then(({data})=>{
-                console.log(data)
                 if(data.ok) commit('putProfileData',data.data)
                 return data
             }).catch(({response})=>{    
                 return response.data
+            })
+        },
+        async updateUser({commit,state},data){
+            return axiosClient.put(`/user/${state.profileData.id}`,data).then(({data})=>{
+                console.log(data)
+                if(data.ok) commit('putProfileData',data.data)
+                return data
+            }).catch(({response})=>{
+                return response.data
+            })
+        },
+        async changePassword({state},data){
+            return axiosClient.post(`/auth/changepassword`,data).then(({data})=>{
+                if(data.ok){
+                    state.TOKEN = data.data.access_token
+                    sessionStorage.clear()
+                    sessionStorage.setItem('TOKEN',data.data.access_token)
+                }
+                return data
+            }).catch(({response})=>{
+                return response.data
+            })
+        },
+        async logout({state}){
+            return axiosClient.post(`/auth/logout`).then(({data})=>{
+                if(data.ok){
+                    sessionStorage.clear();
+                }
+                return data
             })
         }
     },
@@ -48,6 +75,7 @@ const user = {
         },
         putProfileData: (state,data)=>{
             state.profileData = data
+            console.log(state.profileData)
         }
     }
 }
@@ -76,18 +104,34 @@ const posts = {
         },
         async createPost({commit},data){
             return axiosClient.post(`/posts/create`,data).then(({data})=>{
-                console.log(data)
+                if(data.ok) commit('addPost',data.data)
                 return data
             }).catch(({response})=>{ 
                 console.log(response)  
                 return response.data
+            })
+        },
+        async updatePost({commit},data){
+            return axiosClient.put(`/posts/${data.id}`,data.payload).then(({data})=>{
+                return data
+            }).catch(({response})=>{ 
+                return response.data
+            })
+        },
+        async deletePost({commit},id){
+            return axiosClient.delete(`/posts/${id}`).then(({data})=>{
+                return data
+            }).catch((err)=>{
+                return err
             })
         }
     },
     mutations:{
         putPosts: (state,data)=>{
             state.data = data
-            console.log(state.data)
+        },
+        addPost: (state,data)=>{
+            state.data.push(data)
         },
         putLatestPosts: (state,data)=>{
             state.latest=data
@@ -104,14 +148,72 @@ const postdetail = {
             return axiosClient.get(`/posts/${id}`).then(({data})=>{
                 console.log(data)
                 if(data.ok) commit('putPostData', data.data)
+                return data
             }).catch(({response})=>{    
                 return response.data
+            })
+        },
+        async postComment({commit,state},payload){
+            return axiosClient.post(`/${state.data.id}/comments`,payload).then(({data})=>{
+                if(data.ok) commit('addComment',data.data)
+                return data
+            }).catch((err)=>{
+                return err
+            })
+        },
+        async updateComment({commit},payload){
+            return axiosClient.put(`/${payload.pid}/comments/${payload.data.id}`,payload.data).then(({data})=>{
+                if(data.ok) commit('updateComment',data.data)
+                return data
+            }).catch((err)=>{
+                return err
+            })
+        },
+        async deleteComment({commit,state}, comment){
+            return axiosClient.delete(`/${state.data.id}/comments/${comment.id}`).then(({data})=>{
+                if(data.ok) commit('deleteComment',comment);
+                return data
             })
         }
     },
     mutations: {
         putPostData: (state, data)=>{
             state.data = data
+        },
+        addComment: (state, data)=>{
+            if(data.parentCommentId != null){
+                state.data.comments.forEach((d)=>{
+                    if(d.id === data.parentCommentId){
+                        d.childComments.push(data)
+                    }
+                })
+            }else{
+                state.data.comments.push(data)
+            }
+        },
+        updateComment: (state,data) =>{
+            let index = state.data.comments.findIndex((com)=>com.id === data.id)
+            if(index > -1){
+                state.data.comments[index] = data
+            }
+        },
+        deleteComment: (state,comment)=>{
+            console.log(comment)
+            if(comment.parentCommentId != null){
+                let pindex = state.data.comments.findIndex((c)=>c.id == comment.parentCommentId)
+                if(pindex > -1){
+                    let parent = state.data.comments[pindex].childComments
+                    remove(parent)
+                }
+            }else{
+                remove(state.data.comments)
+            }
+            function remove(parent=[]){
+                let index = parent.findIndex((p)=>p.id === comment.id)
+                if(index > -1){
+                    parent.splice(index,1)
+                }
+            }
         }
     }
 }

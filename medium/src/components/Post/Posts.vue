@@ -15,9 +15,13 @@
                             </div>
                             <router-link :to="{name: 'post-index',params:{id: post.id}}" class="mt-2 text-gray" :class="`post-des`">
                                 <h5 class="mt-2 post-title">{{post.title}}</h5>
-                                {{post.description}}
+                                <div class="text-truncate-container">
+                                    <p class="post-description">
+                                        {{post.description}}
+                                    </p>
+                                </div>
                             </router-link>
-                            <div class="float-start align-items-center justify-content-between" style="font-size: 1em">
+                            <div class="float-start align-items-center justify-content-between w-100" style="font-size: 1em">
                                 <div class="float-start mt-1 align-items-center lf-post-footer">
                                     <span class="float-start rounded-pill bg-gray-opt px-2 py-1 mx-1" v-for="category in post.categories">{{category.name}}</span>
                                     <span class="float-start py-1 me-2">6 min read</span>
@@ -30,7 +34,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </button>
-                                    <a href="#" class="fa-solid fa-ellipsis"></a>
+                                    <RouterLink v-if="isMyPost(post.user.id)" :to="{name: 'edit-post',params:{id: post.id}}">
+                                        <span class="fa-solid fa-ellipsis"></span>
+                                    </RouterLink>
                                 </div>
                             </div>
                         </div>
@@ -70,6 +76,8 @@
 
 <script setup>
 import { getDate, getImage, getProfile } from '@/js/script';
+import { RouterLink } from 'vue-router';
+import { useStore } from 'vuex';
 
 const props = defineProps({
     data: {
@@ -85,5 +93,11 @@ const props = defineProps({
         default: []
     }
 })
-console.log(props.latest)
+
+const store = useStore()
+
+const isMyPost = (id)=>{
+    return store.state.user.profileData.id === id 
+}
+
 </script>

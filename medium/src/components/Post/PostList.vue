@@ -14,7 +14,11 @@
                             </div>
                             <router-link :to="{name: 'post-index',params:{id: post.id}}" class="mt-2 text-gray" :class="`post-des`">
                                 <h5 class="mt-2 post-title">{{post.title}}</h5>
-                                {{post.description}}
+                                <div class="text-truncate-container">
+                                    <p class="post-description">
+                                        {{post.description}}
+                                    </p>
+                                </div>
                             </router-link>
                             <div class="d-flex align-items-center justify-content-between" style="font-size: .7em">
                                 <div class="float-start">

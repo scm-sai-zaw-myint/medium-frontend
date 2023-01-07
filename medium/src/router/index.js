@@ -5,16 +5,15 @@ import Post from '@/views/Post.vue'
 import store from '../store/index'
 import PostIndex from '../components/Post/PostIndex.vue'
 import ProfileView from '@/views/ProfileView.vue'
-import CreatePost from '@/components/Post/CreatePost.vue'
-
+import CreatePost from '@/components/Post/PostCreate.vue'
+import PostUpdate from '@/components/Post/PostUpdate.vue'
+import HomeViewVue from '@/views/HomeView.vue'
+import Page from '@/views/Page.vue'
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: ()=>{
-      if(store.state.user.TOKEN == null) return import('@/views/HomeView.vue')
-      return import('@/views/PageView.vue')
-    },
+    component: Page
   },
   {
     path: '/profile',
@@ -41,6 +40,9 @@ const routes = [
       },
       {
         path: '/create',name: 'create-post', component: CreatePost
+      },
+      {
+        path: '/:id/edit', name: 'edit-post', component: PostUpdate
       }
     ]
   },
@@ -62,7 +64,7 @@ router.beforeEach((to,from,next)=>{
     callData.push(store.dispatch('getLatestPost'))
   }
   //get post data
-  if(to.name === 'post-index'){
+  if(to.name === 'post-index' || to.name === 'edit-post'){
     callData.push(store.dispatch('getPost',to.params.id))
   }
   if(to.name === 'profile'){

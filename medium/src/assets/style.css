@@ -181,6 +181,54 @@ a:hover{
 .lf-post-footer{
     max-width: 70%;
 }
+.post-description{
+    max-height: 300px;
+    min-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.text-truncate-container {
+    /* width: 300px; */
+    max-width: 100%;
+    min-width: 100%;
+}
+.text-truncate-container p {
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.comment-div{
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+.comment-div.editing:focus{
+    border: 1px solid #d4d4d4 !important;
+}
+.comment-reply-box{
+    display: none !important;
+}
+.child-com-box{
+    padding-left: 5em;
+}
+.edit-btn{
+    border: 1px dashed;
+    font-size: .8em;
+}
+.bio-te{
+    width: 100%;
+    border: 1px dashed;
+    min-height: 140px;    
+}
+.modal-close{
+    width: 20px;
+    height: 20px;
+}
+
+.border-dashed{
+    border: 1px dashed;
+}
+
 @media screen and (max-width: 764px) {
     .custom-flex{
         flex-direction: column-reverse;
