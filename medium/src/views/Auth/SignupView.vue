@@ -18,24 +18,29 @@
                         <div class="d-flex flex-column mb-3 col-md-6">
                             <label for="name" style="font-size: 1.2em;" class="mb-2">Name</label>
                             <input v-model="inputData.name" type="text" id="name" name="name" class="rounded border border-1 px-3 py-2"
+                            :class="getErrorClass('name')"
                             placeholder="Your name">
+                            <span class="text-danger px-1 validator-msg" v-if="formError.name!= null">{{ formError.name }}</span>
                         </div>
                         <div class="d-flex flex-column mb-3 col-md-6">
                             <label for="email" style="font-size: 1.2em;" class="mb-2">Email</label>
                             <input v-model="inputData.email" type="email" id="email" name="email" class="rounded border border-1 px-3 py-2"
-                            placeholder="Your emial (example@gmail.com)">
+                            :class="getErrorClass('email')" placeholder="Your emial (example@gmail.com)">
+                            <span class="text-danger px-1 validator-msg" v-if="formError.email!= null">{{ formError.email }}</span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="d-flex flex-column mb-3 col-md-6">
                             <label for="password" style="font-size: 1.2em;" class="mb-2">Password</label>
                             <input v-model="inputData.password" type="password" id="password" name="password" class="rounded border border-1 px-3 py-2"
-                            placeholder="Password">
+                            :class="getErrorClass('password')" placeholder="Password">
+                            <span class="text-danger px-1 validator-msg" v-if="formError.password!= null">{{ formError.password }}</span>
                         </div>
                         <div class="d-flex flex-column mb-3 col-md-6">
                             <label for="comfirm-password" style="font-size: 1.2em;" class="mb-2">Confirm password</label>
                             <input v-model="inputData.confirm" type="password" id="comfirm-password" name="comfirm-password" class="rounded border border-1 px-3 py-2"
-                            placeholder="Confirm password">
+                            :class="getErrorClass('confirm')" placeholder="Confirm password">
+                            <span class="text-danger px-1 validator-msg" v-if="formError.confirm!= null">{{ formError.confirm }}</span>
                         </div>
                     </div>
                     <div class="d-flex flex-column mb-3">
@@ -67,6 +72,19 @@ const inputData = ref({
     confirm: '',
     bio: ''
 })
+
+const formError = ref({
+    name: null,
+    email: null,
+    password: null,
+    confirm: null
+})
+const getErrorClass = (key)=>{
+    if (key in formError.value && formError.value[key] != null) {
+        return 'border-danger'
+    }
+    return null;
+}
 const submit = ()=>{
     let form = new FormData()
     form.append('name',inputData.value.name)
@@ -76,16 +94,23 @@ const submit = ()=>{
     
     if(inputData.value.password != inputData.value.confirm){
         error.value = "Password doesn't match"
+        formError.value.confirm = "Password doesn't match"
         return false;
     }
     
     store.dispatch(`registration`,form).then((res)=>{
         if(res.ok){
+            formError.value = {
+                name: null,
+                email: null,
+                password: null,
+                confirm: null
+            }
             router.push({name: 'home'})
         }
         else{
-            console.log(res)
             error.value = res.message
+            formError.value = Object.assign(formError.value, res.data)
         }
     })
 }

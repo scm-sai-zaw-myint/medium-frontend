@@ -228,7 +228,9 @@ a:hover{
 .border-dashed{
     border: 1px dashed;
 }
-
+.validator-msg{
+    font-size: .8em;
+}
 @media screen and (max-width: 764px) {
     .custom-flex{
         flex-direction: column-reverse;

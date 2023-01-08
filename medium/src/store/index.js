@@ -1,4 +1,5 @@
 import axiosClient from "@/axios/axios";
+import { deleteComment, replyComment } from "@/js/script";
 import { createStore } from "vuex";
 
 const user = {
@@ -107,7 +108,6 @@ const posts = {
                 if(data.ok) commit('addPost',data.data)
                 return data
             }).catch(({response})=>{ 
-                console.log(response)  
                 return response.data
             })
         },
@@ -182,11 +182,7 @@ const postdetail = {
         },
         addComment: (state, data)=>{
             if(data.parentCommentId != null){
-                state.data.comments.forEach((d)=>{
-                    if(d.id === data.parentCommentId){
-                        d.childComments.push(data)
-                    }
-                })
+                replyComment(state.data.comments, data)
             }else{
                 state.data.comments.push(data)
             }
@@ -200,11 +196,7 @@ const postdetail = {
         deleteComment: (state,comment)=>{
             console.log(comment)
             if(comment.parentCommentId != null){
-                let pindex = state.data.comments.findIndex((c)=>c.id == comment.parentCommentId)
-                if(pindex > -1){
-                    let parent = state.data.comments[pindex].childComments
-                    remove(parent)
-                }
+                deleteComment(state.data.comments, comment)
             }else{
                 remove(state.data.comments)
             }

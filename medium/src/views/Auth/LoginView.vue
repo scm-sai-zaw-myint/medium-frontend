@@ -18,11 +18,13 @@
                             <label for="email" style="font-size: 1.2em;" class="mb-2">Email</label>
                             <input v-model="inputData.email" type="text" id="email" name="email" class="rounded form-control rounded-none px-3 py-2"
                                 placeholder="Your emial (example@gmail.com)">
+                            <span class="text-danger px-1 validator-msg" v-if="formError.email!= null">{{ formError.email }}</span>
                         </div>
                         <div class="d-flex flex-column mb-3">
                             <label for="password" style="font-size: 1.2em;" class="mb-2">Password</label>
                             <input v-model="inputData.password" type="password" id="password" name="password" class="rounded form-control rounded-none px-3 py-2"
                                 placeholder="Password">
+                            <span class="text-danger px-1 validator-msg" v-if="formError.password!= null">{{ formError.password }}</span>
                         </div>
                         <button type="submit" class="w-auto border-0 fit-content px-3 py-2 bg-secondary text-light form-control rounded">Login</button>
                     </form>
@@ -44,14 +46,28 @@ const inputData = ref({
     password: ''
 })
 const error = ref(null)
+const formError = ref({
+    email: null,
+    password: null
+})
+const getErrorClass = (key)=>{
+    if (key in formError.value && formError.value[key] != null) {
+        return 'border-danger'
+    }
+    return null;
+}
 const login = ()=>{
     store.dispatch(`loginUser`,inputData.value).then((res)=>{
         if(res.ok){
-            
+            formError.value = {
+                email: null,
+                password: null
+            }
             router.push({name: 'home'})
         }
         else{
             error.value = res.data.error
+            formError.value = Object.assign(formError.value, res.data)
         }
     })
 }

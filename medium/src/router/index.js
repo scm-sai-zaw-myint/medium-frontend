@@ -18,6 +18,7 @@ const routes = [
   {
     path: '/profile',
     name: 'profile',
+    meta: {requireAuth: true},
     component: ProfileView
   },
   {
@@ -39,10 +40,12 @@ const routes = [
         path: '/:id',name: 'post-index', component: PostIndex
       },
       {
-        path: '/create',name: 'create-post', component: CreatePost
+        path: '/create',name: 'create-post', component: CreatePost,
+        meta: {requireAuth: true}
       },
       {
-        path: '/:id/edit', name: 'edit-post', component: PostUpdate
+        path: '/:id/edit', name: 'edit-post', component: PostUpdate,
+        meta: {requireAuth: true}
       }
     ]
   },
@@ -56,6 +59,9 @@ const router = createRouter({
 
 router.beforeEach((to,from,next)=>{
   const callData =[]
+  if((to.meta.requireAuth || from.meta.requireAuth) && !store.state.user.TOKEN){
+    next({name: 'sign-in'})
+  }
   callData.push(store.dispatch('getProfileData'))
   callData.push(store.dispatch('getAllCategories'))
   //get all post in home page

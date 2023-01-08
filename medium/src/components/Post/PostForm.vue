@@ -6,7 +6,8 @@
                     <h3>Post {{ options }}</h3>
                     <div class="d-flex flex-column mb-3">
                         <input v-model="inputData.title" type="text" id="title" name="title" class="rounded form-control border border-1 px-3 py-2"
-                        placeholder="Post title">
+                        :class="getErrorClass('title')" placeholder="Post title">
+                        <span class="text-danger px-1 validator-msg" v-if="validation.title != null">{{ validation.title }}</span>
                     </div>
                     <div class="d-flex flex-column mb-3">
                         <Multiselect
@@ -15,19 +16,25 @@
                         :searchable="true"
                         :create-option="true"
                         :options="select"
+                        :classes="getErrorClass('category')"
+                        placeholder="Select category"
                         v-model="inputData.category"
                         />
+                        <span class="text-danger px-1 validator-msg" v-if="validation.categories != null">{{ validation.categories }}</span>
                     </div>
                     <div class="d-flex flex-column mb-3">
                         <input @change="changeImage" type="file" id="image" name="image" class="rounded form-control"
-                        placeholder="Choose image" accept="image/jpeg, image/png, image/jpg, image/jfif">
+                        placeholder="Choose image" accept="image/jpeg, image/png, image/jpg, image/jfif" :class="getErrorClass('image')">
+                        <span class="text-danger px-1 validator-msg" v-if="validation.image != null">{{ validation.image }}</span>
                         <div class="preview my-2 overflow-hidden rounded-3 border border-1" style="max-width: 150px;">
                             <img :src="inputData.image" alt="" style="width: 100%" class="block" v-if="inputData.image != null">
                             <img :src="getImage(inputData.image)" style="width: 100%" class="block" v-else />
                         </div> 
                     </div>
                     <!-- <div id="editor"></div> -->
-                    <textarea v-model="inputData.description" name="description" id="" cols="30" rows="5" class="border-1 rounded p-2" placeholder="Post description"></textarea>
+                    <textarea v-model="inputData.description" name="description" id="" cols="30" rows="5" class="border-1 rounded p-2"
+                    :class="getErrorClass('description')" placeholder="Post description"></textarea>
+                    <span class="text-danger px-1 validator-msg" v-if="validation.description != null">{{ validation.description }}</span>
                     <button type="submit" class="w-auto mt-4 border-0 fit-content px-3 py-2 bg-secondary text-light rounded">{{ options }}</button>
                 </form>
             </div>
@@ -59,6 +66,15 @@ const props = defineProps({
     options: {
         type: String,
         default: 'Publish'
+    },
+    validation: {
+        type: Object,
+        default:{
+            title: null,
+            description: null,
+            categories: null,
+            image: null,
+        }
     }
 })
 const emits = defineEmits(['form-submit'])
@@ -81,6 +97,13 @@ const changeImage = (e)=>{
         reader.readAsDataURL(file);
         console.log("come here",inputData.value.image)
     }
+}
+
+const getErrorClass = (key)=>{
+    if (key in props.validation && props.validation[key] != null) {
+        return 'border-danger'
+    }
+    return null;
 }
 
 const submitHandler = ()=>{

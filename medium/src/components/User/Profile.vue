@@ -112,13 +112,14 @@
     <Transition name="modal-slide-down">
         <ModalBox title="Edit Profile" v-if="edit" @close="edit = false">
             <form @submit.prevent="updateUser" id="user-form">
-                <div class="p-3 d-flex align-items-center">
+                <div class="p-3 d-flex">
                     <button type="button" @click.stop="chooseProfile" class="border-dashed bg-transparent rounded-circle overflow-hidden" style="width: 60px; height: 60px;">
                         <img :src="getProfile(userData.profile)" style="height: 100%;width: auto;">
                         <input id="profile" type="file" hidden name="profile" @change="changeProfile" accept="image/jpeg, image/png, image/jpg, image/jfif">
                     </button>
                     <div class="px-2">
-                        <input name="name" type="text" class="form-control" v-model="userData.name">
+                        <input name="name" type="text" class="form-control" :class="updateFormError.name !=null ? `border-danger`:``" v-model="userData.name">
+                        <span class="text-danger px-1 validator-msg" v-if="updateFormError.name != null">{{ updateFormError.name }}</span>
                         <button @click="chooseProfile" type="button" class="edit-btn mt-1 d-flex align-items-center justify-center rounded px-2">
                             <i class="fa-regular fa-pen-to-square me-2"></i>
                             Edit
@@ -146,13 +147,16 @@
                     </span>
                 </div>
             <div class="d-flex flex-column px-4 py-2">
-                <input v-model="passwordForm.currentPassword" type="password" class="form-control" placeholder="Current password">
+                <input v-model="passwordForm.currentPassword" type="password" class="form-control" :class="updatePasswordFormError.currentPassword !=null ? `border-danger`:``" placeholder="Current password">
+                <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.currentPassword != null">{{ updatePasswordFormError.currentPassword }}</span>
             </div>
             <div class="d-flex flex-column px-4 py-2">
-                <input v-model="passwordForm.newPassword" type="password" class="form-control" placeholder="New password">
+                <input v-model="passwordForm.newPassword" type="password" class="form-control" :class="updatePasswordFormError.newPassword !=null ? `border-danger`:``" placeholder="New password">
+                <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.newPassword != null">{{ updatePasswordFormError.newPassword }}</span>
             </div>
             <div class="d-flex flex-column px-4 py-2">
-                <input v-model="passwordForm.confirmPassword" type="password" class="form-control" placeholder="Confirm password">
+                <input v-model="passwordForm.confirmPassword" type="password" class="form-control" :class="updatePasswordFormError.confirmPassword !=null ? `border-danger`:``" placeholder="Confirm password">
+                <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.confirmPassword != null">{{ updatePasswordFormError.confirmPassword }}</span>
             </div>
             <div class="d-flex align-items-center justify-content-end p-3">
                 <button type="button" @click="changepw = false" class="btn btn-secondary">Cancle</button>
@@ -213,18 +217,34 @@ const changeProfile = (e)=>{
         reader.readAsDataURL(file);
     }
 }
-
+const updateFormError = ref({
+    name: null
+})
 const updateUser = ()=>{
     let form = document.getElementById('user-form')
     let data = new FormData(form)
     store.dispatch(`updateUser`,data).then((res)=>{
         if(res.ok){
+            updateFormError.value.name = null
             edit.value = false
+        }else{
+            updateFormError.value = Object.assign(updateFormError.value, res.data)
         }
     })
 }
+
+const updatePasswordFormError = ref({
+    currentPassword: null,
+    newPassword: null,
+    confirmPassword: null
+})
 const changePassword = ()=>{
     store.dispatch(`changePassword`,passwordForm.value).then((res)=>{
+        updateFormError.value = {
+                currentPassword: null,
+                newPassword: null,
+                confirmPassword: null
+            }
         if(res.ok){
             passwordError.value = null
             changepw.value = false
@@ -233,8 +253,10 @@ const changePassword = ()=>{
                 newPassword: '',
                 confirmPassword: ''
             }
+            
         }else{
             passwordError.value = res.message
+            updatePasswordFormError.value = Object.assign(updateFormError.value,res.data)
         }
     })
 }

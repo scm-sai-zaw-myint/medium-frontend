@@ -67,64 +67,7 @@
                         </div>
                     </form>
                     <div class="my-2">
-                        <div class="w-100 my-4  rounded" v-for="comment in data.comments">
-                            <div class="w-100 border p-2 rounded">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <div class="profile-img">
-                                            <img :src="getProfile(comment.user.profile)" alt="">
-                                        </div>
-                                        <div class="mx-2">
-                                            <h5>{{comment.user.name}}</h5>
-                                            <span class="text-sm">{{getDate(comment.createdAt)}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <form @submit.prevent="updateComment(comment)">
-                                    <input @change="updateComment(comment)" :id="`com-${comment.id}`" class="px-3 py-2 w-100 comment-div" readonly
-                                        :value="comment.body">
-                                </form>
-                                <div class="p-2 d-flex align-items-center">
-                                    <button @click="deleteComment(comment)" v-if="isUserComment(comment.user.id)" class="btn text-light bg-danger me-2"
-                                        style="font-size: .8em;">Delete</button>
-                                    <button v-if="isUserComment(comment.user.id)" class="btn text-light bg-secondary me-2"
-                                        @click="editComment(comment)" style="font-size: .8em;">Edit</button>
-                                    <button class="btn text-light bg-info me-2" @click="replyComment(comment.id)"
-                                        style="font-size: .8em;">Reply</button>
-                                </div>
-                                <form @submit.prevent="postReply(comment)" :id="`reply-${comment.id}`"
-                                    class="p-2 d-flex align-items-center justify-content-center comment-reply-box">
-                                    <input :id="`reply-body-${comment.id}`" type="text" class="w-100 form-control rounded px-3 py-2 me-3"
-                                        placeholder="Enter reply here">
-                                    <button class="btn btn-primary " style="font-size: .9em;">Reply</button>
-                                </form>
-                            </div>
-                            <div class="py-2 child-com-box" v-if="comment.childComments && comment.childComments.length > 0"
-                                >
-                                <div class="mb-2 border p-2 rounded w-100" v-for="childcom in comment.childComments">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div class="d-flex align-items-center">
-                                            <div class="profile-img">
-                                                <img :src="getProfile(childcom.user.profile)" alt="">
-                                            </div>
-                                            <div class="mx-2">
-                                                <h5>{{childcom.user.name}}</h5>
-                                                <span class="text-sm">{{getDate(childcom.createdAt)}}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <form @submit.prevent="updateComment(childcom)">
-                                        <input @change="" :id="`com-${childcom.parentCommentId}-${childcom.id}`" class="px-3 py-2 w-100 comment-div" readonly :value="childcom.body">
-                                    </form>
-                                    <div class="p-2 d-flex align-items-center">
-                                        <button @click="deleteComment(childcom)" v-if="isUserComment(childcom.user.id)" class="btn text-light bg-danger me-2"
-                                            style="font-size: .8em;">Delete</button>
-                                        <button v-if="isUserComment(childcom.user.id)" class="btn text-light bg-secondary me-2"
-                                            @click="editComment(childcom)" style="font-size: .8em;">Edit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <Comments :data="data.comments" />
                     </div>
                 </div>
             </div>
@@ -137,6 +80,7 @@ import { useStore } from 'vuex';
 import { getImage,getProfile,getDate } from '@/js/script';
 import { computed, ref } from '@vue/reactivity';
 import { useRoute, useRouter } from 'vue-router';
+import Comments from '../Tree/Comments.vue';
 const store = useStore()
 
 const data = toRef(store.state.postdetail,'data')
