@@ -11,7 +11,7 @@ import { useStore } from 'vuex';
 import PageLayout from './Layouts/PageLayout.vue';
 
 const store = useStore()
-const userdata = toRef(store.state.user,"profileData")
+const userdata = ref(store.state.user.profileData)
 const allCategory = ref(store.state.category.data)
 const latest = ref(store.state.posts.latest)
 </script>

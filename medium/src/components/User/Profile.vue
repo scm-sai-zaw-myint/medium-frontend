@@ -224,6 +224,7 @@ const updateUser = ()=>{
     let form = document.getElementById('user-form')
     let data = new FormData(form)
     store.dispatch(`updateUser`,data).then((res)=>{
+        console.log(profileData.value)
         if(res.ok){
             updateFormError.value.name = null
             edit.value = false

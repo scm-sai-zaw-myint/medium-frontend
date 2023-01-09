@@ -7,7 +7,7 @@ import PostIndex from '../components/Post/PostIndex.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import CreatePost from '@/components/Post/PostCreate.vue'
 import PostUpdate from '@/components/Post/PostUpdate.vue'
-import HomeViewVue from '@/views/HomeView.vue'
+import SearchView from '@/views/SearchView.vue'
 import Page from '@/views/Page.vue'
 const routes = [
   {
@@ -46,6 +46,9 @@ const routes = [
       {
         path: '/:id/edit', name: 'edit-post', component: PostUpdate,
         meta: {requireAuth: true}
+      },
+      {
+        path: '/search/:search',name: 'post-search', component: SearchView
       }
     ]
   },
@@ -74,6 +77,12 @@ router.beforeEach((to,from,next)=>{
     callData.push(store.dispatch('getPost',to.params.id))
   }
   if(to.name === 'profile'){
+    callData.push(store.dispatch('getLatestPost'))
+    callData.push(store.dispatch('getAllCategories'))
+  }
+  if(to.name === 'post-search'){
+    console.log(to.params)
+    callData.push(store.dispatch(`searchPosts`, to.params.search))
     callData.push(store.dispatch('getLatestPost'))
     callData.push(store.dispatch('getAllCategories'))
   }

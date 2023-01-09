@@ -1,5 +1,6 @@
 import axiosClient from "@/axios/axios";
 import { deleteComment, replyComment } from "@/js/script";
+import { data } from "jquery";
 import { createStore } from "vuex";
 
 const user = {
@@ -23,7 +24,7 @@ const user = {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(({data})=>{
-                if(data.ok) commit('putProfileData',data.data)
+                if(data.ok) commit('putUserData',data.data)
                 return data
             }).catch(({response})=>{    
                 return response.data
@@ -76,7 +77,7 @@ const user = {
         },
         putProfileData: (state,data)=>{
             state.profileData = data
-            console.log(state.profileData)
+            state.data = data
         }
     }
 }
@@ -84,7 +85,8 @@ const user = {
 const posts = {
     state:()=>({
         data:[],
-        latest:[]
+        latest:[],
+        search: []
     }),
     actions:{
         async getAllPost({commit}){
@@ -124,6 +126,17 @@ const posts = {
             }).catch((err)=>{
                 return err
             })
+        },
+        async searchPosts({state,commit},search){
+            return axiosClient.get(`/posts/search?search=${search}`).then(({data})=>{
+                state.search = []
+                if(data.ok){
+                    commit('searchPostsData',data.data)
+                }
+                return data
+            }).catch(({response})=>{ 
+                return response.data
+            })
         }
     },
     mutations:{
@@ -135,6 +148,9 @@ const posts = {
         },
         putLatestPosts: (state,data)=>{
             state.latest=data
+        },
+        searchPostsData: (state,data)=>{
+            state.search = data
         }
     }
 }

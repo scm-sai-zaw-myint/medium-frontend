@@ -14,10 +14,10 @@
                             </g>
                         </svg>
                     </a>
-                    <div class="mx-4 bg-slate-opt rounded-pill overflow-hidden d-flex align-items-center pr-3">
+                    <form @submit.prevent="search" class="mx-4 bg-slate-opt rounded-pill overflow-hidden d-flex align-items-center pr-3">
                         <i class="fa-solid fa-magnifying-glass" style="padding-left: .8rem;"></i>
-                        <input type="text" class="w-100 border-0 py-2 px-3 bg-transparent" placeholder="Search Medium">
-                    </div>
+                        <input v-model="searchInput" type="text" name="search" class="w-100 border-0 py-2 px-3 bg-transparent" placeholder="Search Medium">
+                    </form>
                 </div>
                 <div class="d-flex align-items-center position-relative">
                     <RouterLink :to="{name: 'create-post'}" class="d-flex mx-2 align-items-center justify-content-center border-0 bg-transparent">
@@ -90,7 +90,15 @@ const logout = ()=>{
             router.push({name: 'sign-in'})
         }
     })
-    
+}
+const searchInput = ref(null)
+const search = ()=>{
+    router.push({
+        name: 'post-search',
+        params: {
+            search: searchInput.value
+        }
+    })
 }
 </script>
 <style scoped>
