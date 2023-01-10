@@ -1,6 +1,5 @@
 import axiosClient from "@/axios/axios";
 import { deleteComment, replyComment } from "@/js/script";
-import { data } from "jquery";
 import { createStore } from "vuex";
 
 const user = {

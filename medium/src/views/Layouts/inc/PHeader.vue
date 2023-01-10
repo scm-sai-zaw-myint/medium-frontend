@@ -76,11 +76,12 @@
 <script setup>
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 const show = ref(false)
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
 const isUserLogged = computed(()=>{
     return store.state.user.TOKEN != null
 })
@@ -93,12 +94,12 @@ const logout = ()=>{
 }
 const searchInput = ref(null)
 const search = ()=>{
-    router.push({
-        name: 'post-search',
-        params: {
-            search: searchInput.value
-        }
-    })
+    if(route.name === 'post-search'){
+        store.dispatch(`searchPosts`,searchInput.value).then(({data})=>{
+           store.state.posts.search = data.data
+        })
+    }
+    router.push({name: 'post-search',params:{search: searchInput.value}})
 }
 </script>
 <style scoped>
