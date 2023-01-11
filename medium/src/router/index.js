@@ -9,6 +9,7 @@ import CreatePost from '@/components/Post/PostCreate.vue'
 import PostUpdate from '@/components/Post/PostUpdate.vue'
 import SearchView from '@/views/SearchView.vue'
 import Page from '@/views/Page.vue'
+import RelatedPost from '@/components/Post/RelatedPost.vue'
 const routes = [
   {
     path: '/',
@@ -37,7 +38,7 @@ const routes = [
     component: Post,
     children:[
       {
-        path: '/:id',name: 'post-index', component: PostIndex
+        path: ':id',name: 'post-index', component: PostIndex
       },
       {
         path: '/create',name: 'create-post', component: CreatePost,
@@ -48,7 +49,10 @@ const routes = [
         meta: {requireAuth: true}
       },
       {
-        path: '/search?s=:search',name: 'post-search', component: SearchView
+        path: 'search/:search',name: 'post-search', component: SearchView
+      },
+      {
+        path: 'category/:category', name: 'related-post', component: RelatedPost
       }
     ]
   },
@@ -80,7 +84,12 @@ router.beforeEach((to,from,next)=>{
     callData.push(store.dispatch('getLatestPost'))
     callData.push(store.dispatch('getAllCategories'))
   }
-  
+  if(to.name === 'post-search' || (from.name == undefined && to.name === 'post-search')){
+    console.log(to.name,to.params)
+    callData.push(store.dispatch(`searchPosts`, to.params.search))
+    callData.push(store.dispatch('getLatestPost'))
+    callData.push(store.dispatch('getAllCategories'))
+  }
   Promise.all(callData).then(()=>{
     next()
   })

@@ -95,15 +95,10 @@ const logout = ()=>{
 }
 const searchInput = ref(null)
 const search = ()=>{
-    store.dispatch(`searchPosts`, searchInput.value).then((res)=>{
-        console.log(res)
-        if(res.ok){
-            router.push({
-                name: 'post-search',
-                params:{
-                    search: searchInput.value
-                }
-            })
+    router.push({
+        name: 'post-search',
+        params: {
+            search: searchInput.value
         }
     })
 }
