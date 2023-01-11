@@ -4,7 +4,7 @@
             <div class="w-100 d-flex flex-wrap">
                 <div class="col-lg-8 order-lg-1 col-sm-12 order-2 d-flex flex-column">
                     <div class="row mt-4 mb-4 col-md-12 border-1 border-bottom pb-2"
-                    v-for="post in data">
+                    v-for="post in postData">
                         <div class="col-md-8">
                             <div class="d-flex align-items-center">
                                 <div class="post-profile border">
@@ -77,6 +77,7 @@
 
 <script setup>
 import { getDate, getImage, getProfile } from '@/js/script';
+import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useStore } from 'vuex';
 
@@ -96,7 +97,7 @@ const props = defineProps({
 })
 
 const store = useStore()
-
+const postData = ref(props.data)
 const isMyPost = (id)=>{
     return store.state.user.profileData.id === id 
 }

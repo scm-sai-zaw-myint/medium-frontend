@@ -129,7 +129,6 @@ const posts = {
         },
         async searchPosts({state,commit},search){
             return axiosClient.get(`/posts/search?search=${search}`).then(({data})=>{
-                state.search = []
                 if(data.ok){
                     commit('searchPostsData',data.data)
                 }

@@ -35,7 +35,7 @@ const createPost = (form)=>{
             }
             router.push({name: 'home'})
         }else{
-            formError.value = Object.assign(formError.value, res.data)
+            formError.value = res.data
         }
     })
 }

@@ -14,7 +14,7 @@
                             </g>
                         </svg>
                     </a>
-                    <form @submit.prevent="search" class="mx-4 bg-slate-opt rounded-pill overflow-hidden d-flex align-items-center pr-3">
+                    <form  @submit.prevent="search" class="mx-4 bg-slate-opt rounded-pill overflow-hidden d-flex align-items-center pr-3">
                         <i class="fa-solid fa-magnifying-glass" style="padding-left: .8rem;"></i>
                         <input v-model="searchInput" type="text" name="search" class="w-100 border-0 py-2 px-3 bg-transparent" placeholder="Search Medium">
                     </form>
@@ -74,13 +74,15 @@
 </template>
 
 <script setup>
+import SearchView from '@/views/SearchView.vue';
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 const show = ref(false)
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
 const isUserLogged = computed(()=>{
     return store.state.user.TOKEN != null
 })
@@ -93,10 +95,15 @@ const logout = ()=>{
 }
 const searchInput = ref(null)
 const search = ()=>{
-    router.push({
-        name: 'post-search',
-        params: {
-            search: searchInput.value
+    store.dispatch(`searchPosts`, searchInput.value).then((res)=>{
+        console.log(res)
+        if(res.ok){
+            router.push({
+                name: 'post-search',
+                params:{
+                    search: searchInput.value
+                }
+            })
         }
     })
 }
