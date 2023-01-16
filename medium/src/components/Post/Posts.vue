@@ -23,7 +23,10 @@
                             </router-link>
                             <div class="float-start align-items-center justify-content-between w-100" style="font-size: 1em">
                                 <div class="float-start mt-1 align-items-center lf-post-footer">
-                                    <span class="float-start rounded-pill bg-gray-opt px-2 py-1 mx-1" v-for="category in post.categories">{{category.name}}</span>
+                                    <router-link class="float-start rounded-pill bg-gray-opt px-2 py-1 mx-1" v-for="category in post.categories"
+                                    :to="{name: 'related-post',params:{category: category.name}}">
+                                        {{category.name}}
+                                    </router-link>
                                     <span class="float-start py-1 me-2">6 min read</span>
                                     <span class="float-start sp py-1">Selected for you.</span>
                                 </div>
@@ -46,7 +49,7 @@
                             </RouterLink>
                         </div>
                     </div>
-                    <div class="p-4 text-center text-secodary" v-if="data.length == 0">No posts.</div>
+                    <div class="p-4 text-center text-secodary" v-if="data.length == 0">{{ placeholder }}</div>
                 </div>
                 <div class="col-lg-4 order-lg-2 col-sm-12 order-1">
                     <div class="w-80 mx-auto">
@@ -66,7 +69,10 @@
                             </router-link>
                         </div>
                         <div class="px-2 py-4 border-top border-secondary float-start" style="font-size: .8em;">
-                            <span class="border p-2 rounded-pill bg-light m-1 float-start" v-for="cate in allCategory">{{cate.name}}</span>
+                            <router-link class="border p-2 rounded-pill bg-light m-1 float-start" v-for="cate in allCategory"
+                            :to="{name: 'related-post',params:{category: cate.name}}">
+                                {{cate.name}}
+                            </router-link>
                         </div>
                     </div>
                 </div>
@@ -77,7 +83,7 @@
 
 <script setup>
 import { getDate, getImage, getProfile } from '@/js/script';
-import { ref } from 'vue';
+import { ref, toRef } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useStore } from 'vuex';
 
@@ -93,11 +99,15 @@ const props = defineProps({
     allCategory:{
         type: Array,
         default: []
+    },
+    placeholder:{
+        type:String,
+        default: 'No posts.'
     }
 })
 
 const store = useStore()
-const postData = ref(props.data)
+const postData = toRef(props,'data')
 const isMyPost = (id)=>{
     return store.state.user.profileData.id === id 
 }

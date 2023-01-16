@@ -85,8 +85,12 @@ router.beforeEach((to,from,next)=>{
     callData.push(store.dispatch('getAllCategories'))
   }
   if(to.name === 'post-search' || (from.name == undefined && to.name === 'post-search')){
-    console.log(to.name,to.params)
     callData.push(store.dispatch(`searchPosts`, to.params.search))
+    callData.push(store.dispatch('getLatestPost'))
+    callData.push(store.dispatch('getAllCategories'))
+  }
+  if(to.name === 'related-post'){
+    callData.push(store.dispatch('getRelatedPosts',to.params.category))
     callData.push(store.dispatch('getLatestPost'))
     callData.push(store.dispatch('getAllCategories'))
   }

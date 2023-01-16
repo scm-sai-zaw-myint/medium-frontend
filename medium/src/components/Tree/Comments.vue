@@ -23,13 +23,14 @@
                     <button v-if="isUserComment(child.user.id)" class="btn text-light bg-secondary me-2" @click="editComment(child)"
                         style="font-size: .8em;">Edit</button>
                     <button class="btn text-light bg-info me-2" @click="replyComment(child.id)"
-                        style="font-size: .8em;">Reply</button>
+                        style="font-size: .8em;" v-if="store.state.user.authenticated()">Reply</button>
                 </div>
                 <form @submit.prevent="postReply(child)" :id="`reply-${child.id}`"
                     class="p-2 d-flex align-items-center justify-content-center comment-reply-box">
                     <input :id="`reply-body-${child.id}`" type="text" class="w-100 form-control rounded px-3 py-2 me-3"
                         placeholder="Enter reply here">
-                    <button class="btn btn-primary " style="font-size: .9em;">Reply</button>
+                    <button class="btn btn-primary " style="font-size: .9em;" type="submit">Reply</button>
+                    <button class="btn btn-secondary ms-2" style="font-size: .9em;" type="button" @click="closeReply(child)">close</button>
                 </form>
             </div>
             <Comments v-if="child.childComments.length > 0" :data="child.childComments" />
@@ -40,7 +41,6 @@
 import { getDate, getProfile } from '@/js/script';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
-
 const store = useStore()
 const route = useRoute()
 
@@ -102,6 +102,7 @@ const deleteComment = (comment)=>{
         console.log(res)
     })
 }
+
 const closeReply = (comment)=>{
     let replyBox = document.getElementById(`reply-${comment.id}`)
     replyBox.classList.add('comment-reply-box')

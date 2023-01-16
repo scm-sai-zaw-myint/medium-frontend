@@ -48,7 +48,8 @@
                             </router-link>
                         </div>
                         <div class="px-2 py-4 border-top border-secondary float-start" style="font-size: .8em;">
-                            <span class="border p-2 rounded-pill bg-light m-1 float-start" v-for="category in data.categories">{{category.name}}</span>
+                            <router-link class="border p-2 rounded-pill bg-light m-1 float-start" v-for="category in data.categories"
+                            :to="{name: 'related-post',params:{category: category.name}}">{{category.name}}</router-link>
                         </div>
                     </div>
                 </div>
@@ -56,7 +57,7 @@
             <div class="w-80 mx-auto py-3">
                 <h4>Comments</h4>
                 <div class="w-100 mx-auto p-4 text-sm ">
-                    <form @submit.prevent="postComment" class="w-100 d-flex flex-column">
+                    <form @submit.prevent="postComment" class="w-100 d-flex flex-column" v-if="store.state.user.authenticated()">
                         <label for="comment">Here you can left message ! </label>
                         <textarea v-model="commentData.body" name="" id="comment" cols="30" rows="10" class="border-1 p-2 rounded"
                             placeholder="What're you thoughts?"></textarea>

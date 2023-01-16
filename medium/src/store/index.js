@@ -6,7 +6,10 @@ const user = {
     state: ()=>({
         data:{},
         TOKEN: sessionStorage.getItem('TOKEN'),
-        profileData:{}
+        profileData:{},
+        authenticated: function(){
+            return this.TOKEN != null
+        }
     }),
     actions:{
         async loginUser({commit},data){
@@ -85,7 +88,8 @@ const posts = {
     state:()=>({
         data:[],
         latest:[],
-        search: []
+        search: [],
+        related: []
     }),
     actions:{
         async getAllPost({commit}){
@@ -96,9 +100,10 @@ const posts = {
                 return response.data
             })
         },
-        async getLatestPost({commit}){
+        async getLatestPost({state,commit}){
             return axiosClient.get('/posts/latest').then(({data})=>{
-                if(data.ok) commit('putLatestPosts',data.data)
+                if (data.ok) { commit('putLatestPosts', data.data) }
+                else { state.related = [] }
                 return data
             }).catch(({response})=>{    
                 return response.data
@@ -135,6 +140,14 @@ const posts = {
             }).catch(({response})=>{ 
                 return response.data
             })
+        },
+        async getRelatedPosts({commit},catId){
+            return axiosClient.get(`/posts/categories/${catId}/posts`).then(({data})=>{
+                if(data.ok) commit('putRelatedPost',data.data)
+                return data
+            }).catch(({response})=>{ 
+                return response.data
+            })
         }
     },
     mutations:{
@@ -149,6 +162,9 @@ const posts = {
         },
         searchPostsData: (state,data)=>{
             state.search = data
+        },
+        putRelatedPost: (state,data)=>{
+            state.related = data
         }
     }
 }

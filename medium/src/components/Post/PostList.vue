@@ -24,9 +24,10 @@
                                 <div class="float-start">
                                     <span class="float-start me-2">{{ getDate(post.createdAt) }}</span>
                                     <span class="float-start ">1 min read</span>
-                                    <span class="float-start rounded bg-gray-opt px-1 mx-1" v-for="category in post.categories">
+                                    <router-link class="float-start rounded bg-gray-opt px-1 mx-1" v-for="category in post.categories"
+                                     :to="{name: 'related-post',params:{category:category.name}}">
                                         {{category.name}}
-                                    </span>
+                                    </router-link>
                                     <span class="float-start ">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="#FFC017" stroke="none" viewBox="0 0 24 24" stroke-width="1.5"
                                             style="width: 15px">
@@ -49,12 +50,8 @@
                 <div class="col-lg-4 order-lg-2 col-sm-12 order-1">
                     <div class="w-80 mx-auto">
                         <h6 class="mb-2">DISCOVER MORE OF WHAT MATTERS TO YOU</h6>
-                        <div class="px-2 py-4 border-bottom border-secondary float-start" style="font-size: .8em;">
-                            <span class="border p-2 rounded m-1 float-start">Programming</span>
-                            <span class="border p-2 rounded m-1 float-start">Data Sience</span>
-                            <span class="border p-2 rounded m-1 float-start">Technology</span>
-                            <span class="border p-2 rounded m-1 float-start">Programming</span>
-                            <span class="border p-2 rounded m-1 float-start">Programming</span>
+                        <div class="px-2 py-4 border-bottom border-secondary float-start" style="font-size: .8em;" v-for="cate in allCategory">
+                            <router-link :to="{name: 'related-post',params:{category: cate.name}}" class="border p-2 rounded m-1 float-start">{{cate.name}}</router-link>
                         </div>
                         <div class="py-4 float-start" style="font-size: .8em;">
                             <span class="m-1 float-start">help</span>
