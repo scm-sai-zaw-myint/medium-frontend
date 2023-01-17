@@ -1,4 +1,5 @@
 import img from '@/assets/img/no-img.jpg'
+import axiosClient from '@/axios/axios'
 
 export const getImage = (url)=>{
     if(url!=null) return url
@@ -63,9 +64,162 @@ export const deleteComment = (treeData = [],data)=>{
     }
 }
 
-export const actions = function(){
+export const user = function(){
     return{
-        
+        async loginUser(data){
+            return axiosClient.post('/auth/request/login',data).then(({data})=>{
+                if(data.ok){
+                    sessionStorage.setItem('user',JSON.stringify(data.data.details))
+                    sessionStorage.setItem('TOKEN',data.data.accessToken)
+                }
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        },
+        async registration(payload){
+            return axiosClient.post('/auth/request/registration',payload,{
+                headers:{
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(({data})=>{
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        },
+        async getProfileData(id = null){
+            let route = id != null && id.length > 0 ? `/user/${id}` : '/auth/'
+            return axiosClient.get(route).then(({data})=>{
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        },
+        async updateUser(id,data){
+            return axiosClient.put(`/user/${id}`,data).then(({data})=>{
+                return data
+            }).catch(({response})=>{
+                return response.data
+            })
+        },
+        async changePassword(data){
+            return axiosClient.post(`/auth/changepassword`,data).then(({data})=>{
+                if(data.ok){
+                    sessionStorage.clear()
+                    sessionStorage.setItem('TOKEN',data.data.access_token)
+                }
+                return data
+            }).catch(({response})=>{
+                return response.data
+            })
+        },
+        async logout(){
+            return axiosClient.post(`/auth/logout`).then(({data})=>{
+                if(data.ok){
+                    sessionStorage.clear();
+                }
+                return data
+            })
+        },
+        isUserLogged(){
+            return sessionStorage.getItem('TOKEN') != null
+        },
+        data(){
+            return JSON.parse(sessionStorage.getItem('user'))
+        }
+    }
+}
+
+export const posts = function(){
+    return{
+        async getAllPost(){
+            return axiosClient.get('/posts').then(({data})=>{
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        },
+        async getLatestPost(){
+            return axiosClient.get('/posts/latest').then(({data})=>{
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        },
+        async createPost(data){
+            return axiosClient.post(`/posts/create`,data).then(({data})=>{
+                return data
+            }).catch(({response})=>{ 
+                return response.data
+            })
+        },
+        async updatePost(data){
+            return axiosClient.put(`/posts/${data.id}`,data.payload).then(({data})=>{
+                return data
+            }).catch(({response})=>{ 
+                return response.data
+            })
+        },
+        async deletePost(id){
+            return axiosClient.delete(`/posts/${id}`).then(({data})=>{
+                return data
+            }).catch((err)=>{
+                return err
+            })
+        },
+        async searchPosts(search){
+            return axiosClient.get(`/posts/search?search=${search}`).then(({data})=>{
+                return data
+            }).catch(({response})=>{ 
+                return response.data
+            })
+        },
+        async getRelatedPosts(catId){
+            return axiosClient.get(`/posts/categories/${catId}/posts`).then(({data})=>{
+                return data
+            }).catch(({response})=>{ 
+                return response.data
+            })
+        },
+        async getPost(id){
+            return axiosClient.get(`/posts/${id}`).then(({data})=>{
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        },
+        async postComment(id,payload){
+            return axiosClient.post(`/${id}/comments`,payload).then(({data})=>{
+                return data
+            }).catch((err)=>{
+                return err
+            })
+        },
+        async updateComment(payload){
+            return axiosClient.put(`/${payload.pid}/comments/${payload.data.id}`,payload.data).then(({data})=>{
+                return data
+            }).catch((err)=>{
+                return err
+            })
+        },
+        async deleteComment(id, comment){
+            return axiosClient.delete(`/${id}/comments/${comment.id}`).then(()=>{
+                return comment
+            })
+        }
+    }
+}
+
+export const category = function(){
+    return{
+        async getAllCategories(){
+            return axiosClient.get('/posts/categories').then(({data})=>{
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        }
     }
 }
 
@@ -73,5 +227,8 @@ export default{
     getImage,
     getProfile,
     getDate,
-    replyComment
+    replyComment,
+    user,
+    posts,
+    category
 }

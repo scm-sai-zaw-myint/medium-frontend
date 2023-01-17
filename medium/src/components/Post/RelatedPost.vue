@@ -2,18 +2,43 @@
     <Posts :data="postData" :all-category="allCategory" :latest="latest" :placeholder="placeholder" />
 </template>
 <script setup>
+import { category, posts } from '@/js/script';
 import { computed } from '@vue/reactivity';
-import { ref, toRef } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useStore } from 'vuex';
 import Posts from './Posts.vue';
-const store = useStore()
-const postData = toRef(store.state.posts,'related')
-const latest = ref(store.state.posts.latest)
-const allCategory = ref(store.state.category.data)
+const postData = ref([])
+const latest = ref([])
+const allCategory = ref([])
 const route = useRoute()
 
+posts().getRelatedPosts(route.params.category).then((res)=>{
+    if(res.ok){
+        postData.value = res.data
+    }
+})
+posts().getLatestPost().then((res)=>{
+    if(res.ok){
+        latest.value = res.data
+    }
+})
+category().getAllCategories().then((res)=>{
+    if(res.ok){
+        allCategory.value = res.data
+    }
+})
 const placeholder = computed(()=>{
     return `No post related with '${route.params.category}'`
 })
+
+watch(()=> route.params.category, ()=>{
+    if('category' in route.params){
+        posts().getRelatedPosts(route.params.category).then((res) => {
+            if (res.ok) {
+                postData.value = res.data
+            }
+        })
+    }
+})
+
 </script>

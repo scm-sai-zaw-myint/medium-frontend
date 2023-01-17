@@ -8,7 +8,6 @@ import '@fortawesome/fontawesome-free/js/all.js'
 import '@vueform/multiselect/themes/default.css'
 import './assets/style.css'
 
-import store from './store'
-createApp(App).use(store).use(router).mount('#app')
+createApp(App).use(router).mount('#app')
 
 

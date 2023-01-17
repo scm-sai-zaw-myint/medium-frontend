@@ -231,6 +231,10 @@ a:hover{
 .validator-msg{
     font-size: .8em;
 }
+.modal-icon{
+    width: 45px;
+    height: 45px;
+}
 @media screen and (max-width: 764px) {
     .custom-flex{
         flex-direction: column-reverse;

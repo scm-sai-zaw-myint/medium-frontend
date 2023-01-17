@@ -43,10 +43,10 @@
 </template>
 
 <script setup>
-import { toRef } from 'vue';
 import Multiselect from '@vueform/multiselect'
-import { computed, ref } from '@vue/reactivity';
+import { computed, ref, toRef } from '@vue/reactivity';
 import { getImage } from '@/js/script';
+import { onMounted } from 'vue';
 
 const props = defineProps({
     data: {
@@ -85,8 +85,8 @@ const select = computed(()=>{
     })
     return x
 })
-const inputData = ref(props.data)
-
+const inputData = toRef(props,'data')
+console.log(inputData.value)
 const changeImage = (e)=>{
     const [file] = e.target.files
     if (file) {

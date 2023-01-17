@@ -17,12 +17,24 @@
   </MainLayout>
 </template>
 <script setup>
+import axiosClient from '@/axios/axios';
 import PostList from '@/components/Post/PostList.vue';
-import { ref } from 'vue';
-import { useStore } from 'vuex';
+import { posts,category } from '@/js/script';
+import { onMounted, ref } from 'vue';
 import MainLayout from './Layouts/MainLayout.vue';
 
-const store = useStore()
-const postData = ref(store.state.posts.data)
-const allCategory = ref(store.state.category.data)
+const postData = ref([])
+const allCategory = ref([])
+onMounted(()=>{
+    posts().getAllPost().then((res)=>{
+        if(res.ok){
+            postData.value = res.data
+        }
+    })
+    category().getAllCategories().then((res)=>{
+        if(res.ok){
+            allCategory.value = res.data
+        }
+    })
+})
 </script>

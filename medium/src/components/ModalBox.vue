@@ -2,7 +2,7 @@
     <div class="modal">
         <div class="modal-box rounded bg-light shadow">
             <div class="py-2 d-flex justify-content-between align-items-center border-bottom">
-                <span class="px-4 ">
+                <span class="px-4 text-center mx-auto">
                     {{ title }}
                 </span>
                 <button @click="closeHandler" class="border-0 bg-transparnt modal-close rounded-circle circle d-flex justify-content-center align-items-center mx-2">
@@ -47,5 +47,8 @@ const closeHandler = (e)=>{
     transform: translate(-50%,-50%);
     min-width: 25%;
 }
-
+.modal-close{
+    position: absolute;
+    right: 0;
+}
 </style>

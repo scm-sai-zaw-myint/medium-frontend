@@ -6,10 +6,24 @@
 <script setup>
 import PageLayout from './Layouts/PageLayout.vue';
 import Posts from '@/components/Post/Posts.vue'
-import { useStore } from 'vuex';
-import { ref } from 'vue';
-const store = useStore()
-const postData = ref(store.state.posts.data)
-const latest = ref(store.state.posts.latest)
-const allCategory = ref(store.state.category.data)
+import { onMounted, ref } from 'vue';
+import { category, posts } from '@/js/script';
+const postData = ref([])
+const latest = ref([])
+const allCategory = ref([])
+onMounted(()=>{
+    posts().getAllPost().then((res) => {
+        if (res.ok) { postData.value = res.data }
+    })
+    posts().getLatestPost().then((res) => {
+        if (res.ok) {
+            latest.value = res.data
+        }
+    })
+    category().getAllCategories().then((res)=>{
+        if(res.ok){
+            allCategory.value = res.data
+        }
+    })
+})
 </script>

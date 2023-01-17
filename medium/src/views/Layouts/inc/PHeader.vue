@@ -74,20 +74,17 @@
 </template>
 
 <script setup>
-import SearchView from '@/views/SearchView.vue';
+import { user } from '@/js/script';
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 const show = ref(false)
-const store = useStore()
 const router = useRouter()
-const route = useRoute()
 const isUserLogged = computed(()=>{
-    return store.state.user.TOKEN != null
+    return user().data() && user().isUserLogged()
 })
 const logout = ()=>{
-    store.dispatch('logout').then((res)=>{
+    user().logout().then((res)=>{
         if(res.ok){
             router.push({name: 'sign-in'})
         }

@@ -34,12 +34,11 @@
     </MainLayout>
 </template>
 <script setup>
+import { user } from '@/js/script';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
 import MainLayout from '../Layouts/MainLayout.vue';
 
-const store = useStore()
 const router = useRouter()
 const inputData = ref({
     email: '',
@@ -50,14 +49,8 @@ const formError = ref({
     email: null,
     password: null
 })
-const getErrorClass = (key)=>{
-    if (key in formError.value && formError.value[key] != null) {
-        return 'border-danger'
-    }
-    return null;
-}
 const login = ()=>{
-    store.dispatch(`loginUser`,inputData.value).then((res)=>{
+    user().loginUser(inputData.value).then((res)=>{
         if(res.ok){
             formError.value = {
                 email: null,

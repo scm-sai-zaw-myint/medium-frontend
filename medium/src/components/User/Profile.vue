@@ -10,7 +10,7 @@
                             </div>
                             <h4 class="mx-2">{{profileData.name}}</h4>
                         </div>
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center" v-if="isMe()">
                             <button type="button" @click.stop="edit = true" 
                                 class="px-2 py-1 rounded-pill bg-secondary mx-3 text-light border-0 text-sm">
                                 Edit Profile
@@ -54,21 +54,13 @@
                                 </router-link>
                                 <div class="d-flex align-items-center justify-content-between" style="font-size: 1em">
                                     <div class="d-flex align-items-center">
-                                        <span class="rounded-pill bg-gray-opt px-2 py-1 mx-1"
-                                            v-for="category in post.category">{{category.name}}</span>
-                                        <span>. 6 min read .</span>
-                                        <span class="sp">Selected for you.</span>
+                                        <router-link class="float-start rounded-pill bg-gray-opt px-2 py-1 mx-1" v-for="category in post.categories"
+                                            :to="{name: 'related-post',params:{category: category.name}}">
+                                            {{category.name}}
+                                        </router-link>
                                     </div>
                                     <div class="d-flex align-items-center">
-                                        <button class="mx-2 bg-transparent px-0 py-0 border-0 d-flex align-items-center justify-content-center"
-                                            style="width: 20px;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                                stroke="currentColor" style="width: 20px;">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </button>
-                                        <RouterLink  :to="{name: 'edit-post',params:{id: post.id}}">
+                                        <RouterLink  :to="{name: 'edit-post',params:{id: post.id}}" v-if="isMe()">
                                         <span class="fa-solid fa-ellipsis"></span>
                                     </RouterLink>
                                     </div>
@@ -102,7 +94,10 @@
                             </router-link>
                         </div>
                         <div class="px-2 py-4 border-top border-secondary float-start" style="font-size: .8em;">
-                            <span class="border p-2 rounded-pill bg-light m-1 float-start" v-for="category in allCategory">{{category.name}}</span>
+                            <router-link class="border p-2 rounded-pill bg-light m-1 float-start" v-for="cate in allCategory"
+                            :to="{name: 'related-post',params:{category: cate.name}}">
+                                {{cate.name}}
+                            </router-link>
                         </div>
                     </div>
                 </div>
@@ -146,38 +141,40 @@
                         {{ passwordError }}
                     </span>
                 </div>
-            <div class="d-flex flex-column px-4 py-2">
-                <input v-model="passwordForm.currentPassword" type="password" class="form-control" :class="updatePasswordFormError.currentPassword !=null ? `border-danger`:``" placeholder="Current password">
-                <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.currentPassword != null">{{ updatePasswordFormError.currentPassword }}</span>
-            </div>
-            <div class="d-flex flex-column px-4 py-2">
-                <input v-model="passwordForm.newPassword" type="password" class="form-control" :class="updatePasswordFormError.newPassword !=null ? `border-danger`:``" placeholder="New password">
-                <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.newPassword != null">{{ updatePasswordFormError.newPassword }}</span>
-            </div>
-            <div class="d-flex flex-column px-4 py-2">
-                <input v-model="passwordForm.confirmPassword" type="password" class="form-control" :class="updatePasswordFormError.confirmPassword !=null ? `border-danger`:``" placeholder="Confirm password">
-                <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.confirmPassword != null">{{ updatePasswordFormError.confirmPassword }}</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-end p-3">
-                <button type="button" @click="changepw = false" class="btn btn-secondary">Cancle</button>
-                <button type="submit" class="btn btn-primary ms-2">chage</button>
-            </div>
-        </form>
+                <div class="d-flex flex-column px-4 py-2">
+                    <input v-model="passwordForm.currentPassword" type="password" class="form-control"
+                        :class="updatePasswordFormError.currentPassword !=null ? `border-danger`:``" placeholder="Current password">
+                    <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.currentPassword != null">{{
+                        updatePasswordFormError.currentPassword }}</span>
+                </div>
+                <div class="d-flex flex-column px-4 py-2">
+                    <input v-model="passwordForm.newPassword" type="password" class="form-control"
+                        :class="updatePasswordFormError.newPassword !=null ? `border-danger`:``" placeholder="New password">
+                    <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.newPassword != null">{{
+                        updatePasswordFormError.newPassword }}</span>
+                </div>
+                <div class="d-flex flex-column px-4 py-2">
+                    <input v-model="passwordForm.confirmPassword" type="password" class="form-control"
+                        :class="updatePasswordFormError.confirmPassword !=null ? `border-danger`:``" placeholder="Confirm password">
+                    <span class="text-danger px-1 validator-msg" v-if="updatePasswordFormError.confirmPassword != null">{{
+                        updatePasswordFormError.confirmPassword }}</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end p-3">
+                    <button type="button" @click="changepw = false" class="btn btn-secondary">Cancle</button>
+                    <button type="submit" class="btn btn-primary ms-2">change</button>
+                </div>
+            </form>
         </ModalBox>
     </Transition>
 </template>
 
 <script setup>
-import { getDate, getImage, getProfile } from '@/js/script';
+import { getDate, getImage, getProfile, user } from '@/js/script';
+import router from '@/router';
 import { computed } from '@vue/reactivity';
-import { ref, toRef } from 'vue';
-import { useStore } from 'vuex';
+import { ref, watch } from 'vue';
 import ModalBox from '../ModalBox.vue';
 const props = defineProps({
-    data: {
-        type: Object,
-        default: {}
-    },
     latest: {
         type: Array,
         default: []
@@ -185,15 +182,38 @@ const props = defineProps({
     allCategory:{
         type: Array,
         default: []
+    },
+    id:{
+        type: String,
+        default: null
     }
 })
-
-const store = useStore()
-const profileData = toRef(store.state.user,'profileData')
-const userData = ref(Object.assign({},props.data))
+watch(()=> props.id,()=>{
+    user().getProfileData(props.id).then((res) => {
+        if (res.ok) {
+            profileData.value = res.data
+            userData.value = Object.assign({}, res.data)
+        } else {
+            router.back()
+        }
+    })
+})
+const profileData = ref({})
+const userData = ref({})
 const edit = ref(false)
 const changepw = ref(false)
 const passwordError = ref(null)
+user().getProfileData(props.id).then((res) => {
+    if (res.ok){
+        profileData.value = res.data
+        userData.value = Object.assign({},res.data)
+    }else{
+        router.back()
+    }
+})
+const isMe = ()=>{
+    return userData.value.id === user().data().id
+}
 const getPostCount = computed(()=>{
     if(profileData.value.posts == null) return 0
     return profileData.value.posts.length 
@@ -204,10 +224,12 @@ const passwordForm = ref({
     confirmPassword: ''
 })
 const chooseProfile = ()=>{
+    if(!isMe().value) return false
     let file = document.getElementById('profile')
     file.click()
 }
 const changeProfile = (e)=>{
+    if(!isMe()) return false
     const [file] = e.target.files
     if (file) {
         var reader = new FileReader();
@@ -221,13 +243,14 @@ const updateFormError = ref({
     name: null
 })
 const updateUser = ()=>{
+    if(!isMe()) return false
     let form = document.getElementById('user-form')
     let data = new FormData(form)
-    store.dispatch(`updateUser`,data).then((res)=>{
-        console.log(profileData.value)
+    user().updateUser(userData.value.id,data).then((res)=>{
         if(res.ok){
             updateFormError.value.name = null
             edit.value = false
+            profileData.value = res.data
         }else{
             updateFormError.value = Object.assign(updateFormError.value, res.data)
         }
@@ -240,7 +263,8 @@ const updatePasswordFormError = ref({
     confirmPassword: null
 })
 const changePassword = ()=>{
-    store.dispatch(`changePassword`,passwordForm.value).then((res)=>{
+    if(!isMe()) return false
+    user().changePassword(passwordForm.value).then((res)=>{
         updateFormError.value = {
                 currentPassword: null,
                 newPassword: null,
@@ -254,10 +278,9 @@ const changePassword = ()=>{
                 newPassword: '',
                 confirmPassword: ''
             }
-            
         }else{
             passwordError.value = res.message
-            updatePasswordFormError.value = Object.assign(updateFormError.value,res.data)
+            updatePasswordFormError.value = res.data
         }
     })
 }

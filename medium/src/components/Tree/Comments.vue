@@ -1,6 +1,6 @@
 <template>
     <div class="py-2">
-        <div class="mb-2 w-100 ps-4" v-for="child in data">
+        <div class="mb-2 w-100 ps-4" v-for="child in comment_data">
             <div class="border p-2 rounded w-100">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
@@ -23,7 +23,7 @@
                     <button v-if="isUserComment(child.user.id)" class="btn text-light bg-secondary me-2" @click="editComment(child)"
                         style="font-size: .8em;">Edit</button>
                     <button class="btn text-light bg-info me-2" @click="replyComment(child.id)"
-                        style="font-size: .8em;" v-if="store.state.user.authenticated()">Reply</button>
+                        style="font-size: .8em;" v-if="user().isUserLogged()">Reply</button>
                 </div>
                 <form @submit.prevent="postReply(child)" :id="`reply-${child.id}`"
                     class="p-2 d-flex align-items-center justify-content-center comment-reply-box">
@@ -38,20 +38,21 @@
     </div>
 </template>
 <script setup>
-import { getDate, getProfile } from '@/js/script';
+import { getDate, getProfile, posts, user } from '@/js/script';
+import { toRef } from 'vue';
 import { useRoute } from 'vue-router';
-import { useStore } from 'vuex';
-const store = useStore()
 const route = useRoute()
-
 const props = defineProps({
     data:{
         type: Array,
         default:[]
     }
 })
+
+const comment_data = toRef(props, 'data')
+console.log(comment_data.value)
 const isUserComment = (id)=>{
-    return id === store.state.user.profileData.id
+    return user().data() && id === user().data().id
 }
 
 const getCommentId = (comment)=>{
@@ -75,7 +76,7 @@ const updateComment = (comment)=>{
     }
     com.classList.remove('editing')
     com.setAttribute("readonly",true)
-    store.dispatch(`updateComment`,{pid: route.params.id, data: payload})
+    posts().updateComment({pid: route.params.id, data: payload})
 }
 const replyComment = (id)=>{
     let replyBox = document.getElementById(`reply-${id}`)
@@ -90,16 +91,25 @@ const postReply = (comment)=>{
         body: reply.value,
         parentCommentId: comment.id
     }
-    store.dispatch('postComment',payload).then((res)=>{
+    
+    posts().postComment(route.params.id,payload).then((res)=>{
+        console.log(res,comment_data.value)
         if(res.ok){
             reply.value = null
             replyBox.classList.add('comment-reply-box')
+            let index = comment_data.value.findIndex((c)=>c.id === res.data.parentCommentId)
+            if(index > -1){
+                comment_data.value[index].childComments.push(res.data)
+            }
         }
     })
 }
 const deleteComment = (comment)=>{
-    store.dispatch('deleteComment',comment).then((res)=>{
-        console.log(res)
+    posts().deleteComment(route.params.id,comment).then((res)=>{
+        let index = comment_data.value.findIndex((c) => c.id === comment.id)
+        if (index > -1) {
+            comment_data.value.splice(index, 1)
+        }
     })
 }
 

@@ -23,7 +23,6 @@
                             <div class="d-flex align-items-center justify-content-between" style="font-size: .7em">
                                 <div class="float-start">
                                     <span class="float-start me-2">{{ getDate(post.createdAt) }}</span>
-                                    <span class="float-start ">1 min read</span>
                                     <router-link class="float-start rounded bg-gray-opt px-1 mx-1" v-for="category in post.categories"
                                      :to="{name: 'related-post',params:{category:category.name}}">
                                         {{category.name}}
@@ -49,16 +48,15 @@
                 </div>
                 <div class="col-lg-4 order-lg-2 col-sm-12 order-1">
                     <div class="w-80 mx-auto">
-                        <h6 class="mb-2">DISCOVER MORE OF WHAT MATTERS TO YOU</h6>
-                        <div class="px-2 py-4 border-bottom border-secondary float-start" style="font-size: .8em;" v-for="cate in allCategory">
+                        <h6 class="mb-4">DISCOVER MORE OF WHAT MATTERS TO YOU</h6>
+                        <div class="px-2 pb-3  border-secondary float-start" style="font-size: .8em;" v-for="cate in allCategory">
                             <router-link :to="{name: 'related-post',params:{category: cate.name}}" class="border p-2 rounded m-1 float-start">{{cate.name}}</router-link>
                         </div>
-                        <div class="py-4 float-start" style="font-size: .8em;">
+                        <div class="py-4 float-start border-top border-secondary w-100" style="font-size: .8em;">
                             <span class="m-1 float-start">help</span>
                             <span class="m-1 float-start">Contact us</span>
                             <span class="m-1 float-start">About us</span>
                             <span class="m-1 float-start">Developing</span>
-                            <span class="m-1 float-start">test</span>
                         </div>
                     </div>
                 </div>
@@ -72,30 +70,7 @@ import {getImage,getProfile,getDate} from '../../js/script'
 const props = defineProps({
     data:{
         type: Array,
-        default: [
-            {
-                id: null,
-                title: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Odio accusamus",
-                description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores obcaecati ipsam, recusandae",
-                image: "http://localhost:8000/api/assets/image/aGVsbG8gd29ybGQgZQ==.webp",
-                created: new Date(),
-                category: [
-                    {
-                        id: 0,
-                        name: "test category"
-                    },
-                    {
-                        id: 1,
-                        name: "test category"
-                    }
-                ],
-                user: {
-                    id: null,
-                    name: "Test",
-                    profile: "http://localhost:8000/api/assets/image/aGVsbG8gd29ybGQgZQ==.webp"
-                }
-            }
-        ]
+        default: []
     },
     allCategory: {
         type: Array,

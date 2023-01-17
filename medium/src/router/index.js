@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import LoginView from '@/views/Auth/LoginView.vue'
 import SignupView from '@/views/Auth/SignupView.vue'
 import Post from '@/views/Post.vue'
-import store from '../store/index'
 import PostIndex from '../components/Post/PostIndex.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import CreatePost from '@/components/Post/PostCreate.vue'
@@ -10,6 +9,10 @@ import PostUpdate from '@/components/Post/PostUpdate.vue'
 import SearchView from '@/views/SearchView.vue'
 import Page from '@/views/Page.vue'
 import RelatedPost from '@/components/Post/RelatedPost.vue'
+import { posts, user } from '@/js/script'
+
+let postUpdateDataProps = {data:{}}
+
 const routes = [
   {
     path: '/',
@@ -17,10 +20,10 @@ const routes = [
     component: Page
   },
   {
-    path: '/profile',
+    path: '/profile/:id?',
     name: 'profile',
     meta: {requireAuth: true},
-    component: ProfileView
+    component: ProfileView,
   },
   {
     path: '/sign-in',
@@ -46,7 +49,8 @@ const routes = [
       },
       {
         path: '/:id/edit', name: 'edit-post', component: PostUpdate,
-        meta: {requireAuth: true}
+        meta: {requireAuth: true},
+        props: postUpdateDataProps
       },
       {
         path: 'search/:search',name: 'post-search', component: SearchView
@@ -66,34 +70,19 @@ const router = createRouter({
 
 router.beforeEach((to,from,next)=>{
   const callData =[]
-  if((to.meta.requireAuth || from.meta.requireAuth) && !store.state.user.TOKEN){
+  if((to.meta.requireAuth || from.meta.requireAuth) && !user().isUserLogged()){
     next({name: 'sign-in'})
+    return;
   }
-  callData.push(store.dispatch('getProfileData'))
-  callData.push(store.dispatch('getAllCategories'))
-  //get all post in home page
-  if(to.name === 'home'){
-    callData.push(store.dispatch('getAllPost'))
-    callData.push(store.dispatch('getLatestPost'))
+  if(to.name === 'edit-post'){
+    callData.push(posts().getPost(to.params.id).then((res) => {
+      if (res.ok) {
+        postUpdateDataProps.data = res.data
+      }
+      return res
+    }))
   }
-  //get post data
-  if(to.name === 'post-index' || to.name === 'edit-post'){
-    callData.push(store.dispatch('getPost',to.params.id))
-  }
-  if(to.name === 'profile'){
-    callData.push(store.dispatch('getLatestPost'))
-    callData.push(store.dispatch('getAllCategories'))
-  }
-  if(to.name === 'post-search' || (from.name == undefined && to.name === 'post-search')){
-    callData.push(store.dispatch(`searchPosts`, to.params.search))
-    callData.push(store.dispatch('getLatestPost'))
-    callData.push(store.dispatch('getAllCategories'))
-  }
-  if(to.name === 'related-post'){
-    callData.push(store.dispatch('getRelatedPosts',to.params.category))
-    callData.push(store.dispatch('getLatestPost'))
-    callData.push(store.dispatch('getAllCategories'))
-  }
+  
   Promise.all(callData).then(()=>{
     next()
   })

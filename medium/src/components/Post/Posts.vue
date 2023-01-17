@@ -6,13 +6,13 @@
                     <div class="row mt-4 mb-4 col-md-12 border-1 border-bottom pb-2"
                     v-for="post in postData">
                         <div class="col-md-8">
-                            <div class="d-flex align-items-center">
+                            <RouterLink :to="{name: 'profile',params: {id:post.user.id}}" class="d-flex align-items-center">
                                 <div class="post-profile border">
                                     <img :src="getProfile(post.user.profile)" alt="" style>
                                 </div>
                                 <b class="fs-5 font-weight-bold px-2 truncate">{{post.user.name}}</b>
                                 <span>{{getDate(post.createdAt)}}</span>
-                            </div>
+                            </RouterLink>
                             <router-link :to="{name: 'post-index',params:{id: post.id}}" class="mt-2 text-gray" :class="`post-des`">
                                 <h5 class="mt-2 post-title">{{post.title}}</h5>
                                 <div class="text-truncate-container">
@@ -27,16 +27,10 @@
                                     :to="{name: 'related-post',params:{category: category.name}}">
                                         {{category.name}}
                                     </router-link>
-                                    <span class="float-start py-1 me-2">6 min read</span>
-                                    <span class="float-start sp py-1">Selected for you.</span>
+                                    <!-- <span class="float-start py-1 me-2">6 min read</span>
+                                    <span class="float-start sp py-1">Selected for you.</span> -->
                                 </div>
                                 <div class="float-end d-flex align-items-center rg-post-footer">
-                                    <!-- <button class="mx-2 bg-transparent px-0 py-0 border-0 d-flex align-items-center justify-content-center" style="width: 20px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                            style="width: 20px;">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </button> -->
                                     <RouterLink v-if="isMyPost(post.user.id)" :to="{name: 'edit-post',params:{id: post.id}}">
                                         <span class="fa-solid fa-ellipsis"></span>
                                     </RouterLink>
@@ -82,10 +76,9 @@
 </template>
 
 <script setup>
-import { getDate, getImage, getProfile } from '@/js/script';
-import { ref, toRef } from 'vue';
+import { getDate, getImage, getProfile, user } from '@/js/script';
+import { toRef } from 'vue';
 import { RouterLink } from 'vue-router';
-import { useStore } from 'vuex';
 
 const props = defineProps({
     data: {
@@ -106,10 +99,9 @@ const props = defineProps({
     }
 })
 
-const store = useStore()
 const postData = toRef(props,'data')
 const isMyPost = (id)=>{
-    return store.state.user.profileData.id === id 
+    return user().data() && user().data().id === id
 }
 
 </script>

@@ -56,13 +56,12 @@
     </MainLayout>
 </template>
 <script setup>
+import { user } from '@/js/script';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
 import MainLayout from '../Layouts/MainLayout.vue';
 
 const error = ref(null)
-const store = useStore()
 const router = useRouter()
 
 const inputData = ref({
@@ -98,7 +97,7 @@ const submit = ()=>{
         return false;
     }
     
-    store.dispatch(`registration`,form).then((res)=>{
+    user().registration(form).then((res)=>{
         if(res.ok){
             formError.value = {
                 name: null,
