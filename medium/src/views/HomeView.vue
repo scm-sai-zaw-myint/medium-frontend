@@ -13,27 +13,36 @@
             </div>
         </div>
     </div> 
-    <PostList :data="postData" :all-category="allCategory"  />
+    <PostList :data="postData" :all-category="allCategory" :pagination="pagination" />
   </MainLayout>
 </template>
 <script setup>
-import axiosClient from '@/axios/axios';
 import PostList from '@/components/Post/PostList.vue';
 import { posts,category } from '@/js/script';
-import { onMounted, ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import MainLayout from './Layouts/MainLayout.vue';
 
 const postData = ref([])
 const allCategory = ref([])
-onMounted(()=>{
-    posts().getAllPost().then((res)=>{
-        if(res.ok){
+const pagination = ref({})
+const route = useRoute()
+posts().getAllPost(route.query.page).then((res) => {
+    if (res.ok) {
+        postData.value = res.data
+        pagination.value = res.pagination
+    }
+})
+category().getUsedCategories().then((res) => {
+    if (res.ok) {
+        allCategory.value = res.data
+    }
+})
+watch(()=>route.query.page , ()=>{
+    posts().getAllPost(route.query.page).then((res) => {
+        if (res.ok) {
             postData.value = res.data
-        }
-    })
-    category().getAllCategories().then((res)=>{
-        if(res.ok){
-            allCategory.value = res.data
+            pagination.value = res.pagination
         }
     })
 })

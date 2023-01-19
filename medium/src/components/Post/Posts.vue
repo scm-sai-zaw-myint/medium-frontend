@@ -23,12 +23,13 @@
                             </router-link>
                             <div class="float-start align-items-center justify-content-between w-100" style="font-size: 1em">
                                 <div class="float-start mt-1 align-items-center lf-post-footer">
-                                    <router-link class="float-start rounded-pill bg-gray-opt px-2 py-1 mx-1" v-for="category in post.categories"
+                                    <router-link class="float-start rounded-pill bg-gray-opt px-2 py-1 mx-1 mb-1" v-for="category in post.categories"
                                     :to="{name: 'related-post',params:{category: category.name}}">
                                         {{category.name}}
                                     </router-link>
-                                    <!-- <span class="float-start py-1 me-2">6 min read</span>
-                                    <span class="float-start sp py-1">Selected for you.</span> -->
+                                    
+                                    <span class="float-start py-1 me-2 d-flex align-items-center"><span class="bg-secondary seperate mx-2"></span> {{ post.time }}</span>
+                                    <!-- <span class="float-start sp py-1">Selected for you.</span> -->
                                 </div>
                                 <div class="float-end d-flex align-items-center rg-post-footer">
                                     <RouterLink v-if="isMyPost(post.user.id)" :to="{name: 'edit-post',params:{id: post.id}}">
@@ -44,6 +45,7 @@
                         </div>
                     </div>
                     <div class="p-4 text-center text-secodary" v-if="data.length == 0">{{ placeholder }}</div>
+                    <Pagination :data="paginateData" :url="url" />
                 </div>
                 <div class="col-lg-4 order-lg-2 col-sm-12 order-1">
                     <div class="w-80 mx-auto">
@@ -70,6 +72,7 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -79,6 +82,7 @@
 import { getDate, getImage, getProfile, user } from '@/js/script';
 import { toRef } from 'vue';
 import { RouterLink } from 'vue-router';
+import Pagination from '../UI/Pagination.vue';
 
 const props = defineProps({
     data: {
@@ -96,10 +100,19 @@ const props = defineProps({
     placeholder:{
         type:String,
         default: 'No posts.'
+    },
+    pagination:{
+        type: Object,
+        default: {}
+    },
+    url:{
+        type: String,
+        default: '/?page='
     }
 })
 
 const postData = toRef(props,'data')
+const paginateData = toRef(props, 'pagination')
 const isMyPost = (id)=>{
     return user().data() && user().data().id === id
 }

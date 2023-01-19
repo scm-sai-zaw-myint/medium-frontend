@@ -1,42 +1,45 @@
 <template>
-    <Posts :data="postData" :latest="latest" :all-category="allCategory" :placeholder="placeholder" />
+    <Posts :data="postData" :latest="latest" :all-category="allCategory" url="?page=" :pagination="pagination" :placeholder="placeholder" />
 </template>
 
 <script setup>
 import Posts from '@/components/Post/Posts.vue';
 import { category, posts } from '@/js/script';
 import { computed } from '@vue/reactivity';
-import { onMounted, ref, toRef, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const postData = ref([])
 const latest = ref([])
 const allCategory = ref([])
 const route = useRoute()
-const placeholder = computed(()=>{
+const pagination = ref({})
+
+const placeholder = computed(() => {
     return `No post match with '${route.params.search}'`
 })
-watch(()=> route.params.search, ()=>{
-    posts().searchPosts(route.params.search).then((res)=>{
-        if(res.ok){
-            postData.value =res.data
-        }
-    })
+
+posts().searchPosts(route.params.search).then((res) => {
+    if (res.ok) {
+        postData.value = res.data
+        pagination.value = res.pagination
+    }
 })
-onMounted(()=>{
-    posts().searchPosts(route.params.search).then((res)=>{
-        if(res.ok){
-            postData.value =res.data
-        }
-    })
-    posts().getLatestPost().then((res)=>{
-        if(res.ok){
-            latest.value = res.data
-        }
-    })
-    category().getAllCategories().then((res)=>{
-        if(res.ok){
-            allCategory.value = res.data
+posts().getLatestPost().then((res) => {
+    if (res.ok) {
+        latest.value = res.data
+    }
+})
+category().getUsedCategories().then((res) => {
+    if (res.ok) {
+        allCategory.value = res.data
+    }
+})
+watch(() => [route.params.search, route.query.page], () => {
+    posts().searchPosts(route.params.search,route.query.page).then((res) => {
+        if (res.ok) {
+            postData.value = res.data
+            pagination.value = res.pagination
         }
     })
 })

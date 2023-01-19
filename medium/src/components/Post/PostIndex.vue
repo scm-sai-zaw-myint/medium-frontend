@@ -5,19 +5,22 @@
                 <div class="col-lg-8 order-lg-1 col-sm-12 order-2 d-flex flex-column border-1 border-end pe-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <RouterLink :to="{name: 'profile',params:{id: data.user.id}}" class="d-flex align-items-center">
-                            <div class="profile-img">
-                                <img :src="data.user.profile" alt="">
+                            <div class="profile-img rounded-circle border-1 border-secondary">
+                                <img :src="getProfile(data.user.profile)" alt="">
                             </div>
                             <div class="mx-2">
                                 <h5>{{data.user.name}}</h5>
-                                <span class="text-sm">{{getDate(data.createdAt)}}</span>
+                                <span class="text-sm">{{getDate(data.updatedAt)}}</span>
                             </div>
                         </RouterLink>
-                        <button v-if="isUserPost"
-                        @click="deleteOption = true"
-                         class="px-2 py-1 rounded-pill bg-danger mx-3 text-light border-0 text-sm">
-                            Delete
-                        </button>
+                        <div class="d-flex align-items-center">
+                            <RouterLink v-if="isUserPost" :to="{name: 'edit-post',params:{id: data.id}}" class="px-2 py-1 rounded-pill bg-secondary text-light border-0 text-sm">Edit</RouterLink>
+                            <button v-if="isUserPost" @click="deleteOption = true"
+                                class="px-2 py-1 rounded-pill bg-danger mx-2 text-light border-0 text-sm">
+                                Delete
+                            </button>
+                        </div>
+                        
                     </div>
                     <div class="w-100">
                         <div class="w-100 overflow-hidden my-3">

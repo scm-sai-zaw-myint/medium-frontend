@@ -22,7 +22,7 @@ posts().getLatestPost().then((res)=>{
         latest.value = res.data
     }
 })
-category().getAllCategories().then((res)=>{
+category().getUsedCategories().then((res)=>{
     if(res.ok){
         allCategory.value = res.data
     }

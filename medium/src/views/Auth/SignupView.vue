@@ -109,7 +109,7 @@ const submit = ()=>{
         }
         else{
             error.value = res.message
-            formError.value = Object.assign(formError.value, res.data)
+            formError.value = res.data
         }
     })
 }

@@ -20,7 +20,7 @@ posts().getLatestPost().then((res) => {
         latest.value = res.data
     }
 })
-category().getAllCategories().then((res)=>{
+category().getUsedCategories().then((res)=>{
     allCategory.value = res.data
 })
 </script>

@@ -23,7 +23,7 @@
                             <div class="d-flex align-items-center justify-content-between" style="font-size: .7em">
                                 <div class="float-start">
                                     <span class="float-start me-2">{{ getDate(post.createdAt) }}</span>
-                                    <router-link class="float-start rounded bg-gray-opt px-1 mx-1" v-for="category in post.categories"
+                                    <router-link class="float-start rounded bg-gray-opt px-1 mx-1 mb-1" v-for="category in post.categories"
                                      :to="{name: 'related-post',params:{category:category.name}}">
                                         {{category.name}}
                                     </router-link>
@@ -44,7 +44,8 @@
                             </RouterLink>
                         </div>
                     </div>
-                    
+                    <div class="p-4 text-center text-secodary" v-if="data.length == 0">{{ placeholder }}</div>
+                    <Pagination :data="paginateData" url="/?page=" />
                 </div>
                 <div class="col-lg-4 order-lg-2 col-sm-12 order-1">
                     <div class="w-80 mx-auto">
@@ -66,7 +67,9 @@
 </template>
 
 <script setup>
+import { toRef } from 'vue';
 import {getImage,getProfile,getDate} from '../../js/script'
+import Pagination from '../UI/Pagination.vue';
 const props = defineProps({
     data:{
         type: Array,
@@ -75,8 +78,18 @@ const props = defineProps({
     allCategory: {
         type: Array,
         default: []
+    },
+    placeholder:{
+        type:String,
+        default: 'No posts.'
+    },
+    pagination:{
+        type: Object,
+        default:{}
     }
 })
+const paginateData = toRef(props, 'pagination')
+
 </script>
 
 <style lang="scss" scoped>

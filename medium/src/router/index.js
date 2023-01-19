@@ -17,7 +17,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Page
+    component: Page,
   },
   {
     path: '/profile/:id?',
@@ -28,11 +28,13 @@ const routes = [
   {
     path: '/sign-in',
     name: 'sign-in',
+    meta: {auth: true},
     component: LoginView
   },
   {
     path: '/sign-up',
     name: 'sign-up',
+    meta: {auth: true},
     component: SignupView
   },
   {
@@ -70,6 +72,10 @@ const router = createRouter({
 
 router.beforeEach((to,from,next)=>{
   const callData =[]
+  if(to.meta.auth){
+    next();
+    return;
+  }
   if((to.meta.requireAuth || from.meta.requireAuth) && !user().isUserLogged()){
     next({name: 'sign-in'})
     return;

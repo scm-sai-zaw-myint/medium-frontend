@@ -37,8 +37,9 @@
                         <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <Transition name="drop-down">
-                        <div class="position-absolute end-0 my-2 top-100 p-2 rounded bg-light shadow border d-flex flex-column" v-if="show">
-                            <router-link :to="{name:'profile'}" class="d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns" style="min-width: 230px">
+                        <div class="position-absolute end-0 my-2 top-100 overflow-hidden rounded bg-light shadow border d-flex flex-column drop-box" v-if="show"
+                        @mousedown.stop="">
+                            <router-link :to="{name:'profile'}" class="item d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns" style="min-width: 230px">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-label="Profile">
                                     <circle cx="12" cy="7" r="4.5" stroke="currentColor"></circle>
                                     <path d="M3.5 21.5v-4.34C3.5 15.4 7.3 14 12 14s8.5 1.41 8.5 3.16v4.34" stroke="currentColor"
@@ -47,7 +48,7 @@
                                 </svg>
                                 <span class="px-2">Profile</span>
                             </router-link>
-                            <router-link :to="{name: 'home'}" class="d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns" style="min-width: 230px">
+                            <router-link :to="{name: 'home'}" class="item d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns" style="min-width: 230px">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-label="Lists">
                                     <path
                                         d="M6.44 6.69h0a1.5 1.5 0 0 1 1.06-.44h9c.4 0 .78.16 1.06.44l.35-.35-.35.35c.28.28.44.66.44 1.06v14l-5.7-4.4-.3-.23-.3.23-5.7 4.4v-14c0-.4.16-.78.44-1.06z"
@@ -58,7 +59,7 @@
                             </router-link>
 
                            
-                            <button class="d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns border-top" style="min-width: 230px">
+                            <button class="item d-flex align-items-center py-2 px-3 border-0 bg-transparent menu-btns border-top" style="min-width: 230px">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                     class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3" />
@@ -72,25 +73,28 @@
         </div>
     </header>
 </template>
-
 <script setup>
 import { user } from '@/js/script';
 import { computed } from '@vue/reactivity';
+import axios from 'axios';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 const show = ref(false)
 const router = useRouter()
+const route = useRoute()
+
 const isUserLogged = computed(()=>{
     return user().data() && user().isUserLogged()
 })
 const logout = ()=>{
     user().logout().then((res)=>{
+        console.log(res)
         if(res.ok){
-            router.push({name: 'sign-in'})
+            router.replace({name: 'sign-in'})
         }
     })
 }
-const searchInput = ref(null)
+const searchInput = ref(route.params.search)
 const search = ()=>{
     router.push({
         name: 'post-search',
@@ -99,6 +103,9 @@ const search = ()=>{
         }
     })
 }
+document.addEventListener('mousedown',function(){
+    show.value = false
+})
 </script>
 <style scoped>
 .drop-down-enter-active,

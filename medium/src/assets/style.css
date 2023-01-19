@@ -1,8 +1,13 @@
+@font-face {
+    font-family: 'system';
+    src: url('./fonts/SofiaSans-Regular.ttf');
+    font-size: 1em;
+}
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-family: 'system' !important;
 }
 a{
     color: inherit;
@@ -108,9 +113,15 @@ a:hover{
     height: 50px;
     border-radius: 50%;
     overflow: hidden;
+    border: 1px solid rgba(117, 117, 117, 0.267);
+    position: relative;
 }
 .profile-img img{
-    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 100%;
 }
 .text-sm{
     font-size: .8em;
@@ -234,6 +245,18 @@ a:hover{
 .modal-icon{
     width: 45px;
     height: 45px;
+}
+.drop-box .item:hover{
+    background-color: #0000004c !important;
+}
+.seperate{
+    display: block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+}
+.bg-paginate{
+    background-color: #09022e2c;
 }
 @media screen and (max-width: 764px) {
     .custom-flex{

@@ -26,7 +26,7 @@
                         <h3 class="border-bottom border-1 py-2">Information</h3>
                         <div class="my-4">
                             <h4>Post Count</h4>
-                            <span class="text-secondary rounded-circle bg-secondary px-2 text-light">{{getPostCount}}</span>
+                            <span class="text-secondary rounded-circle bg-secondary p-2 text-light">{{getPostCount}}</span>
                         </div>
                         <div class="my-4">
                             <h4>Bio</h4>
@@ -74,6 +74,8 @@
                                 </RouterLink>
                             </div>
                         </div>
+                        <div class="p-4 text-center text-secodary" v-if="!profileData.posts || profileData.posts.length == 0">No posts.</div>
+                        <Pagination :data="paginateData" url="?page=" />
                     </div>
                 </div>
                 <div class="col-lg-4 order-lg-2 col-sm-12 order-1 border-left border-1 ps-3">
@@ -108,7 +110,7 @@
         <ModalBox title="Edit Profile" v-if="edit" @close="edit = false">
             <form @submit.prevent="updateUser" id="user-form">
                 <div class="p-3 d-flex">
-                    <button type="button" @click.stop="chooseProfile" class="border-dashed bg-transparent rounded-circle overflow-hidden" style="width: 60px; height: 60px;">
+                    <button type="button" @click.stop="chooseProfile" class="profile-img border-dashed bg-transparent rounded-circle overflow-hidden" style="width: 60px; height: 60px;">
                         <img :src="getProfile(userData.profile)" style="height: 100%;width: auto;">
                         <input id="profile" type="file" hidden name="profile" @change="changeProfile" accept="image/jpeg, image/png, image/jpg, image/jfif">
                     </button>
@@ -134,7 +136,7 @@
         </ModalBox>
     </Transition>
     <Transition name="modal-slide-down">
-        <ModalBox title="Change password" v-if="changepw" @close="changepw = false">
+        <ModalBox title="Change password" v-if="changepw" @close="closePassword">
             <form @submit.prevent="changePassword">
                 <div class="d-flex flex-column px-4 py-2" v-if="passwordError != null">
                     <span class="px-2 text-danger">
@@ -160,7 +162,7 @@
                         updatePasswordFormError.confirmPassword }}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end p-3">
-                    <button type="button" @click="changepw = false" class="btn btn-secondary">Cancle</button>
+                    <button type="button" @click="closePassword" class="btn btn-secondary">Cancle</button>
                     <button type="submit" class="btn btn-primary ms-2">change</button>
                 </div>
             </form>
@@ -173,7 +175,9 @@ import { getDate, getImage, getProfile, user } from '@/js/script';
 import router from '@/router';
 import { computed } from '@vue/reactivity';
 import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import ModalBox from '../ModalBox.vue';
+import Pagination from '../UI/Pagination.vue';
 const props = defineProps({
     latest: {
         type: Array,
@@ -188,25 +192,20 @@ const props = defineProps({
         default: null
     }
 })
-watch(()=> props.id,()=>{
-    user().getProfileData(props.id).then((res) => {
-        if (res.ok) {
-            profileData.value = res.data
-            userData.value = Object.assign({}, res.data)
-        } else {
-            router.back()
-        }
-    })
-})
+
 const profileData = ref({})
 const userData = ref({})
 const edit = ref(false)
 const changepw = ref(false)
 const passwordError = ref(null)
-user().getProfileData(props.id).then((res) => {
+const paginateData = ref({})
+const route = useRoute()
+
+user().getProfileData(props.id, route.query.page).then((res) => {
     if (res.ok){
         profileData.value = res.data
         userData.value = Object.assign({},res.data)
+        paginateData.value = res.data.pagination
     }else{
         router.back()
     }
@@ -216,7 +215,7 @@ const isMe = ()=>{
 }
 const getPostCount = computed(()=>{
     if(profileData.value.posts == null) return 0
-    return profileData.value.posts.length 
+    return paginateData.value.size
 })
 const passwordForm = ref({
     currentPassword: '',
@@ -224,7 +223,7 @@ const passwordForm = ref({
     confirmPassword: ''
 })
 const chooseProfile = ()=>{
-    if(!isMe().value) return false
+    if(!isMe()) return false
     let file = document.getElementById('profile')
     file.click()
 }
@@ -246,7 +245,7 @@ const updateUser = ()=>{
     if(!isMe()) return false
     let form = document.getElementById('user-form')
     let data = new FormData(form)
-    user().updateUser(userData.value.id,data).then((res)=>{
+    user().updateUser(userData.value.id,data,route.query.page).then((res)=>{
         if(res.ok){
             updateFormError.value.name = null
             edit.value = false
@@ -284,6 +283,37 @@ const changePassword = ()=>{
         }
     })
 }
+const closePassword = ()=>{
+    updatePasswordFormError.value = {
+        currentPassword: null,
+        newPassword: null,
+        confirmPassword: null
+    }
+    passwordError.value = null
+    changepw.value = false
+}
+watch(()=> props.id,()=>{
+    user().getProfileData(props.id, route.query.page).then((res) => {
+        if (res.ok) {
+            profileData.value = res.data
+            userData.value = Object.assign({}, res.data)
+            paginateData.value = res.data.pagination
+        } else {
+            router.back()
+        }
+    })
+})
+watch(()=> route.query.page, ()=>{
+    user().getProfileData(props.id, route.query.page).then((res) => {
+        if (res.ok) {
+            profileData.value = res.data
+            userData.value = Object.assign({}, res.data)
+            paginateData.value = res.data.pagination
+        } else {
+            router.back()
+        }
+    })
+})
 </script>
 <style>
 .modal-slide-down-enter-active,

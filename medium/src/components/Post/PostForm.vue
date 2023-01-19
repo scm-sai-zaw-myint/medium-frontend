@@ -25,15 +25,16 @@
                     <div class="d-flex flex-column mb-3">
                         <input @change="changeImage" type="file" id="image" name="image" class="rounded form-control"
                         placeholder="Choose image" accept="image/jpeg, image/png, image/jpg, image/jfif" :class="getErrorClass('image')">
-                        <span class="text-danger px-1 validator-msg" v-if="validation.image != null">{{ validation.image }}</span>
-                        <div class="preview my-2 overflow-hidden rounded-3 border border-1" style="max-width: 150px;">
+                        <div class="preview my-2 overflow-hidden rounded-3 border border-1" style="max-width: 150px;" :class="getErrorClass('image')">
                             <img :src="inputData.image" alt="" style="width: 100%" class="block" v-if="inputData.image != null">
                             <img :src="getImage(inputData.image)" style="width: 100%" class="block" v-else />
                         </div> 
+                        <span class="text-danger px-1 validator-msg" v-if="validation.image != null">{{ validation.image }}</span>
                     </div>
                     <!-- <div id="editor"></div> -->
                     <textarea v-model="inputData.description" name="description" id="" cols="30" rows="5" class="border-1 rounded p-2"
                     :class="getErrorClass('description')" placeholder="Post description"></textarea>
+                    <span class="px-1 " :class="descriptionLength < 100 ? `text-danger` :`text-secondary`">{{ descriptionLength }}/1600</span>
                     <span class="text-danger px-1 validator-msg" v-if="validation.description != null">{{ validation.description }}</span>
                     <button type="submit" class="w-auto mt-4 border-0 fit-content px-3 py-2 bg-secondary text-light rounded">{{ options }}</button>
                 </form>
@@ -46,7 +47,6 @@
 import Multiselect from '@vueform/multiselect'
 import { computed, ref, toRef } from '@vue/reactivity';
 import { getImage } from '@/js/script';
-import { onMounted } from 'vue';
 
 const props = defineProps({
     data: {
@@ -85,8 +85,10 @@ const select = computed(()=>{
     })
     return x
 })
-const inputData = toRef(props,'data')
-console.log(inputData.value)
+const inputData = ref(props.data)
+const descriptionLength = computed(()=>{
+    return inputData.value.description.length
+})
 const changeImage = (e)=>{
     const [file] = e.target.files
     if (file) {
@@ -95,7 +97,6 @@ const changeImage = (e)=>{
             inputData.value.image = reader.result
         };
         reader.readAsDataURL(file);
-        console.log("come here",inputData.value.image)
     }
 }
 

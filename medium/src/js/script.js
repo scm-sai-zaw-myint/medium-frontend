@@ -39,7 +39,6 @@ function searchChildComment(element, childata){
 }
 
 export const deleteComment = (treeData = [],data)=>{
-    // let findId = data.parentCommentId
     let findId = data.parentCommentId
     if(findId == null){
         treeData.forEach((d,i)=>{
@@ -69,8 +68,8 @@ export const user = function(){
         async loginUser(data){
             return axiosClient.post('/auth/request/login',data).then(({data})=>{
                 if(data.ok){
-                    sessionStorage.setItem('user',JSON.stringify(data.data.details))
-                    sessionStorage.setItem('TOKEN',data.data.accessToken)
+                    localStorage.setItem('user',JSON.stringify(data.data.details))
+                    localStorage.setItem('TOKEN',data.data.accessToken)
                 }
                 return data
             }).catch(({response})=>{    
@@ -83,21 +82,27 @@ export const user = function(){
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(({data})=>{
+                if(data.ok){
+                    localStorage.setItem('user',JSON.stringify(data.data.details))
+                    localStorage.setItem('TOKEN',data.data.accessToken)
+                }
+                return data
+            }).catch(({response})=>{  
+                return response.data
+            })
+        },
+        async getProfileData(id = null, page = null){
+            let route = id != null && id.length > 0 ? `/user/${id}` : `/user/${this.data().id}`
+            page = page == null ? 1 : page
+            return axiosClient.get(`${route}?page=${page}`).then(({data})=>{
                 return data
             }).catch(({response})=>{    
                 return response.data
             })
         },
-        async getProfileData(id = null){
-            let route = id != null && id.length > 0 ? `/user/${id}` : '/auth/'
-            return axiosClient.get(route).then(({data})=>{
-                return data
-            }).catch(({response})=>{    
-                return response.data
-            })
-        },
-        async updateUser(id,data){
-            return axiosClient.put(`/user/${id}`,data).then(({data})=>{
+        async updateUser(id,data,page = null){
+            page = page == null ? 1 : page
+            return axiosClient.put(`/user/${id}?page=${page}`,data).then(({data})=>{
                 return data
             }).catch(({response})=>{
                 return response.data
@@ -106,8 +111,8 @@ export const user = function(){
         async changePassword(data){
             return axiosClient.post(`/auth/changepassword`,data).then(({data})=>{
                 if(data.ok){
-                    sessionStorage.clear()
-                    sessionStorage.setItem('TOKEN',data.data.access_token)
+                    localStorage.clear()
+                    localStorage.setItem('TOKEN',data.data.access_token)
                 }
                 return data
             }).catch(({response})=>{
@@ -117,24 +122,25 @@ export const user = function(){
         async logout(){
             return axiosClient.post(`/auth/logout`).then(({data})=>{
                 if(data.ok){
-                    sessionStorage.clear();
+                    localStorage.clear();
                 }
                 return data
             })
         },
         isUserLogged(){
-            return sessionStorage.getItem('TOKEN') != null
+            return localStorage.getItem('TOKEN') != null
         },
         data(){
-            return JSON.parse(sessionStorage.getItem('user'))
+            return JSON.parse(localStorage.getItem('user'))
         }
     }
 }
 
 export const posts = function(){
     return{
-        async getAllPost(){
-            return axiosClient.get('/posts').then(({data})=>{
+        async getAllPost(page){
+            page = page != null ? page : 1;
+            return axiosClient.get(`/posts?page=${page}`).then(({data})=>{
                 return data
             }).catch(({response})=>{    
                 return response.data
@@ -168,8 +174,9 @@ export const posts = function(){
                 return err
             })
         },
-        async searchPosts(search){
-            return axiosClient.get(`/posts/search?search=${search}`).then(({data})=>{
+        async searchPosts(search, page = null){
+            page = page == null ? 1 : page
+            return axiosClient.get(`/posts/search?search=${search}&page=${page}`).then(({data})=>{
                 return data
             }).catch(({response})=>{ 
                 return response.data
@@ -215,6 +222,13 @@ export const category = function(){
     return{
         async getAllCategories(){
             return axiosClient.get('/posts/categories').then(({data})=>{
+                return data
+            }).catch(({response})=>{    
+                return response.data
+            })
+        },
+        async getUsedCategories(){
+            return axiosClient.get('/posts/categories/used').then(({data})=>{
                 return data
             }).catch(({response})=>{    
                 return response.data
