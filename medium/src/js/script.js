@@ -111,7 +111,6 @@ export const user = function(){
         async changePassword(data){
             return axiosClient.post(`/auth/changepassword`,data).then(({data})=>{
                 if(data.ok){
-                    localStorage.clear()
                     localStorage.setItem('TOKEN',data.data.access_token)
                 }
                 return data

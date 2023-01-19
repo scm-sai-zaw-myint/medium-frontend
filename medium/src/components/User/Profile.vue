@@ -279,7 +279,12 @@ const changePassword = ()=>{
             }
         }else{
             passwordError.value = res.message
-            updatePasswordFormError.value = res.data
+            
+            updatePasswordFormError.value = Object.assign({
+                currentPassword: null,
+                newPassword: null,
+                confirmPassword: null
+            },res.data)
         }
     })
 }
