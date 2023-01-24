@@ -181,8 +181,9 @@ export const posts = function(){
                 return response.data
             })
         },
-        async getRelatedPosts(catId){
-            return axiosClient.get(`/posts/categories/${catId}/posts`).then(({data})=>{
+        async getRelatedPosts(catId, page = null){
+            page = page == null ? 1 : page
+            return axiosClient.get(`/posts/categories/${catId}/posts?page=${page}`).then(({data})=>{
                 return data
             }).catch(({response})=>{ 
                 return response.data

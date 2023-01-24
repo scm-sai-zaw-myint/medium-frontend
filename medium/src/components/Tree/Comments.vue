@@ -3,7 +3,7 @@
         <div class="mb-2 w-100 ps-4" v-for="child in comment_data">
             <div class="border p-2 rounded w-100">
                 <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
+                    <RouterLink :to="{name : 'profile',params:{id: child.user.id}}" class="d-flex align-items-center">
                         <div class="profile-img">
                             <img :src="getProfile(child.user.profile)" alt="">
                         </div>
@@ -11,19 +11,19 @@
                             <h5>{{child.user.name}}</h5>
                             <span class="text-sm">{{getDate(child.createdAt)}}</span>
                         </div>
-                    </div>
+                    </RouterLink>
                 </div>
-                <form @submit.prevent="updateComment(child)">
-                    <input @change="updateComment(child)" :id="getCommentId(child)" class="px-3 py-2 w-100 comment-div" readonly
-                        :value="child.body">
+                <form @submit.prevent="updateComment(child)" class="">
+                    <textarea @change="updateComment(child)" @focusout="updateComment(child)" :id="getCommentId(child)" class="px-3 w-100 comment-div" readonly
+                         style="height: fit-content;font-size: 1.3em;box-sizing: border-box;display: inline-table;">{{ child.body }}</textarea>
                 </form>
                 <div class="p-2 d-flex align-items-center">
                     <button @click="deleteComment(child)" v-if="isUserComment(child.user.id)" class="btn text-light bg-danger me-2"
-                        style="font-size: .8em;">Delete</button>
+                        style="font-size: 1em;">Delete</button>
                     <button v-if="isUserComment(child.user.id)" class="btn text-light bg-secondary me-2" @click="editComment(child)"
-                        style="font-size: .8em;">Edit</button>
+                        style="font-size: 1em;">Edit</button>
                     <button class="btn text-light bg-info me-2" @click="replyComment(child.id)"
-                        style="font-size: .8em;" v-if="user().isUserLogged()">Reply</button>
+                        style="font-size: 1em;" v-if="user().isUserLogged()">Reply</button>
                 </div>
                 <form @submit.prevent="postReply(child)" :id="`reply-${child.id}`"
                     class="p-2 d-flex align-items-center justify-content-center comment-reply-box">
@@ -63,8 +63,11 @@ const editComment = (comment)=>{
     let id = getCommentId(comment)
     let com = document.getElementById(id)   
     com.removeAttribute('readonly')
-    com.classList.add('editing')
+    com.parentElement.classList.add('editing')
+    com.classList.remove('cm-foc')
     com.focus()
+    com.scrollTop = com.scrollHeight
+    com.selectionEnd = com.value.length 
 }
 const updateComment = (comment)=>{
     let id = comment.parentCommentId !=null ? `com-${comment.parentCommentId}-${comment.id}` : `com-${comment.id}`
@@ -74,7 +77,8 @@ const updateComment = (comment)=>{
         body: com.value,
         parentCommentId: comment.parentCommentId
     }
-    com.classList.remove('editing')
+    com.parentElement.classList.remove('editing')
+    com.classList.add('cm-foc')
     com.setAttribute("readonly",true)
     posts().updateComment({pid: route.params.id, data: payload})
 }

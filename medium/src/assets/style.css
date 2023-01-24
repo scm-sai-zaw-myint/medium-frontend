@@ -203,7 +203,8 @@ a:hover{
     max-width: 100%;
     min-width: 100%;
 }
-.text-truncate-container p {
+.text-truncate-container p,
+.text-truncate-container .cm-foc {
     -webkit-line-clamp: 3;
     display: -webkit-box;
     -webkit-box-orient: vertical;

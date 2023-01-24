@@ -250,6 +250,8 @@ const updateUser = ()=>{
             updateFormError.value.name = null
             edit.value = false
             profileData.value = res.data
+            userData.value = Object.assign({}, res.data)
+            console.log(profileData.value,userData.value)
         }else{
             updateFormError.value = Object.assign(updateFormError.value, res.data)
         }
