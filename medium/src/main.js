@@ -9,5 +9,3 @@ import '@vueform/multiselect/themes/default.css'
 import './assets/style.css'
 
 createApp(App).use(router).mount('#app')
-
-
